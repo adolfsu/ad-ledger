@@ -38,6 +38,11 @@ body{background:var(--bg);color:var(--text);font-family:"Segoe UI","Microsoft Ya
 /* ===== 顶栏 ===== */
 .topbar{padding:12px 16px 8px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;background:var(--panel);border-bottom:1px solid var(--border)}
 .topbar h1{font-size:16px;font-weight:600;margin-right:6px;display:flex;align-items:center;gap:8px}
+/* 搜索/排序/显示列/清空筛选 只服务明细页：切到汇总、付费调整记录时收起 */
+.topbar.donly-hide .donly{display:none}
+/* 明细页工具组：搜索/排序/显示列/清空筛选 作为一整组，窄屏时整组换行而不是散开 */
+.detailtools{display:flex;align-items:center;gap:10px;flex:1 1 560px;min-width:0;flex-wrap:wrap}
+.detailtools .searchbox{flex:1 1 220px;min-width:180px;max-width:420px}
 .topbar h1 .logo{color:var(--accent)}
 /* 版本徽章：只在 h1 里改这一个地方，title 写更新日期 */
 .topbar h1 .ver{font-size:10.5px;font-weight:500;color:var(--text3);background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:1px 7px;letter-spacing:.4px;cursor:default}
@@ -410,8 +415,8 @@ tbody tr.has-adj>td:first-child{box-shadow:inset 2px 0 0 var(--amber)}
 </head>
 <body>
 
-<div class="topbar">
-  <h1><span class="logo">📊</span>投放利润看板<span class="ver" id="verBadge" title="2026-11-13 移除产品字段；台账改名并支持店铺多选">v1.3</span></h1>
+<div class="topbar" id="topbar">
+  <h1><span class="logo">📊</span>投放利润看板<span class="ver" id="verBadge" title="2026-11-13 顶栏搜索/排序/显示列仅明细页显示">v1.3.1</span></h1>
   <div class="viewtabs" id="viewTabs">
     <span class="vtab on" data-view="detail">📋 明细</span>
     <span class="vtab" data-view="sum">📊 汇总</span>
@@ -421,18 +426,20 @@ tbody tr.has-adj>td:first-child{box-shadow:inset 2px 0 0 var(--amber)}
   <button class="btn" id="btnNewRec" title="新增一条投放调整记录">✏️ 记一笔</button>
   <a class="btn" href="https://ss.erp321.com/profit-report/goods-profit" target="_blank" rel="noopener" title="打开利润报表页面导出数据">⬇ 获取数据表</a>
   <button class="btn ghost" id="themeBtn" title="切换深色/浅色主题">☀️ 浅色</button>
-  <div class="searchbox">
-    <span class="icon">🔍</span>
-    <input id="searchInput" type="text" placeholder="搜索：店铺 / 款式编码 / 商品名称 / 日期…">
+  <div class="detailtools donly" id="detailTools">
+    <div class="searchbox">
+      <span class="icon">🔍</span>
+      <input id="searchInput" type="text" placeholder="搜索：店铺 / 款式编码 / 商品名称 / 日期…">
+    </div>
+    <div class="sortinfo">排序：
+      <select id="sortColSel" title="选择排序列"></select>
+      <select id="sortDirSel" title="选择升/降序"><option value="1">升序 ↑</option><option value="-1">降序 ↓</option></select>
+      <span class="btn ghost" id="btnResetSort" style="padding:1px 6px;font-size:11px">重置</span>
+    </div>
+    <button class="btn" id="btnCols">⚙ 显示列</button>
+    <button class="btn ghost" id="btnClearFilter">✕ 清空筛选</button>
+    <div class="chips" id="filterChips"></div>
   </div>
-  <div class="sortinfo">排序：
-    <select id="sortColSel" title="选择排序列"></select>
-    <select id="sortDirSel" title="选择升/降序"><option value="1">升序 ↑</option><option value="-1">降序 ↓</option></select>
-    <span class="btn ghost" id="btnResetSort" style="padding:1px 6px;font-size:11px">重置</span>
-  </div>
-  <button class="btn" id="btnCols">⚙ 显示列</button>
-  <button class="btn ghost" id="btnClearFilter">✕ 清空筛选</button>
-  <div class="chips" id="filterChips"></div>
 </div>
 
 <div class="stats" id="statsBar"></div>
@@ -1228,8 +1235,15 @@ function calcRoi(amount,ad,profit){
   return (isNaN(rate)||rate<=0)?NaN:Math.round(1/rate*100)/100;
 }
 
+/* 顶栏控件按页显隐：document 级搜索/排序/显示列/清空筛选 仅在明细页有意义 */
+function paintTopbarMode(v){
+  const tb=$("topbar"); if(tb) tb.classList.toggle("donly-hide", v!=="detail");
+  if(v!=="detail"){ hideColPop(); const cp=document.getElementById("colPop"); if(cp) cp.style.display="none"; }
+}
+
 function switchView(v){
   viewMode=v;
+  paintTopbarMode(v);
   document.querySelectorAll("#viewTabs .vtab").forEach(t=>t.classList.toggle("on",t.dataset.view===v));
   const detail=v==="detail";
   $("statsBar").classList.toggle("hidden",!detail);
@@ -2929,6 +2943,7 @@ const __switchView=switchView;
 switchView=function(v){
   if(v==="ledger"){
     viewMode="ledger";
+    paintTopbarMode("ledger");
     document.querySelectorAll("#viewTabs .vtab").forEach(t=>t.classList.toggle("on",t.dataset.view==="ledger"));
     ["statsBar","tableWrap","pager","sumWrap","dateCtrl","dateSumTableWrap"].forEach(id=>{ const n=el(id); if(n) n.classList.add("hidden"); });
     el("ledgerWrap").classList.remove("hidden");
