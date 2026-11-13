@@ -411,11 +411,11 @@ tbody tr.has-adj>td:first-child{box-shadow:inset 2px 0 0 var(--amber)}
 <body>
 
 <div class="topbar">
-  <h1><span class="logo">📊</span>投放利润看板<span class="ver" id="verBadge" title="2026-11-12 抽屉统一大修">v1.0</span></h1>
+  <h1><span class="logo">📊</span>投放利润看板<span class="ver" id="verBadge" title="2026-11-13 移除产品字段；台账改名并支持店铺多选">v1.3</span></h1>
   <div class="viewtabs" id="viewTabs">
     <span class="vtab on" data-view="detail">📋 明细</span>
     <span class="vtab" data-view="sum">📊 汇总</span>
-    <span class="vtab" data-view="ledger">🗂 调整台账<span id="ledgerCnt" class="vcount">0</span></span>
+    <span class="vtab" data-view="ledger">🗂 付费调整记录<span id="ledgerCnt" class="vcount">0</span></span>
   </div>
   <button class="btn primary" id="btnImport">📂 导入 CSV</button>
   <button class="btn" id="btnNewRec" title="新增一条投放调整记录">✏️ 记一笔</button>
@@ -470,7 +470,7 @@ tbody tr.has-adj>td:first-child{box-shadow:inset 2px 0 0 var(--amber)}
   <div class="tablewrap sumtable hidden" id="dateSumTableWrap"><table id="dateSumTable"></table></div>
 </div>
 
-<!-- 调整台账 -->
+<!-- 付费调整记录（原调整台账） -->
 <div class="sumwrap hidden" id="ledgerWrap">
   <div class="sumctrl">
     <span class="lbl">时段：</span>
@@ -479,8 +479,8 @@ tbody tr.has-adj>td:first-child{box-shadow:inset 2px 0 0 var(--amber)}
       <span class="vtab" data-r="7">近7天</span>
       <span class="vtab" data-r="all">全部</span>
     </div>
-    <span class="lbl">平台：</span>
-    <select class="mini" id="lgPlatform"><option value="">全部平台</option></select>
+    <span class="lbl">店铺：</span>
+    <button class="btn" id="lgShopBtn" title="勾选一个或多个店铺，只看这些店铺的记录">🏪 全部店铺</button>
     <span class="lbl">结论：</span>
     <select class="mini" id="lgVerdict">
       <option value="">全部结论</option>
@@ -582,8 +582,7 @@ tbody tr.has-adj>td:first-child{box-shadow:inset 2px 0 0 var(--amber)}
     <div class="mbody">
       <div class="fld"><label>调整时间<i>*</i></label><input type="datetime-local" id="rmTime"></div>
       <div class="fld"><label>平台<i>*</i></label><select id="rmPlatform"></select></div>
-      <div class="fld full"><label>链接ID<i>*</i></label><input type="text" id="rmLinkId" placeholder="粘贴链接ID，自动匹配历史记录与利润表"><div class="tip" id="rmLinkTip">链接ID 是唯一主体，同产品多链接靠它区分</div></div>
-      <div class="fld"><label>产品<i>*</i></label><input type="text" id="rmProduct" placeholder="如 柠檬酸除垢剂"></div>
+      <div class="fld full"><label>链接ID<i>*</i></label><input type="text" id="rmLinkId" placeholder="粘贴链接ID，自动匹配历史记录与利润表"><div class="tip" id="rmLinkTip">链接ID 是唯一主体，产品信息自动从利润表带出</div></div>
       <div class="fld"><label>店铺</label><input type="text" id="rmShop" list="rmShopList" placeholder="选填"><datalist id="rmShopList"></datalist></div>
       <div class="fld"><label>商品标题</label><input type="text" id="rmTitleIn" placeholder="选填，便于搜索"></div>
       <div class="fld"><label>计划类型</label><select id="rmPlan"></select></div>
@@ -748,6 +747,8 @@ function totalCell(col, t){
 function toNum(v){ if(v==null||v==="") return NaN; const n=parseFloat(String(v).replace(/,/g,"").replace(/%$/,"")); return isNaN(n)?NaN:n; }
 function fmtMoney(v){ const n=toNum(v); if(isNaN(n)) return "—"; return "¥"+n.toLocaleString("zh-CN",{minimumFractionDigits:2,maximumFractionDigits:2}); }
 function fmtPct(v){ const n=toNum(v); if(isNaN(n)) return "—"; return n.toFixed(2)+"%"; }
+/* 小数形式的比率（如效果判据里的平均利润率 0.083）→ "8.3%" */
+function fPr(v){ return (typeof v==="number"&&!isNaN(v))?(v*100).toFixed(1)+"%":"—"; }
 function moneyCls(v){ const n=toNum(v); return isNaN(n)?"":n>0?"pos":n<0?"neg":""; }
 let toastTimer=null;
 function toast(msg){ const t=$("toast"); t.textContent=msg; t.style.display="block"; clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.style.display="none",2600); }
@@ -1277,7 +1278,7 @@ function sumCell(c,v){
   return esc(v);
 }
 
-function renderSumTable(tableId,cols,rows,sort,totLabel){
+function renderSumTable(tableId,cols,rows,sort,totLabel,markFn){
   const sorted=[...rows].sort((x,y)=>{
     if(["shop","date","shops","code","name","link"].includes(sort.key)) return String(x[sort.key]).localeCompare(String(y[sort.key]),"zh")*sort.dir;
     const vx=toNum(x[sort.key]), vy=toNum(y[sort.key]);
@@ -1295,7 +1296,8 @@ function renderSumTable(tableId,cols,rows,sort,totLabel){
   h+="</tr></thead><tbody>";
   for(const r of sorted){
     h+="<tr>";
-    for(const c of cols){
+    const mk=(typeof markFn==="function")?(markFn(r)||""):"";
+    cols.forEach((c,ci)=>{
       let inner;
       if(c.key==="name"){
         inner=esc(r.name||"—");
@@ -1308,9 +1310,10 @@ function renderSumTable(tableId,cols,rows,sort,totLabel){
       if((c.key==="code"||c.key==="name"||c.key==="link")&&r[c.key]&&r[c.key]!=="—"){
         inner+=`<span class="cpy" data-cpy="${esc(r[c.key])}" title="点击复制${c.key==="name"?"链接标题":"链接ID"}">⧉</span>`;
       }
+      if(ci===0&&mk) inner+=mk;
       const txtCls=(c.key==="shop"||c.key==="link"||c.key==="code")?" shopname":"";
       h+=`<td class="${c.num?"num":""}${txtCls}${c.roi?" roicell":""}"${txtCls?` title="${esc(c.shops?r.shopsList.join("、"):r[c.key])}"`:""}${c.roi?' title="点击查看计算过程"':""}>${inner}</td>`;
-    }
+    });
     h+="</tr>";
   }
   h+="</tbody>";
@@ -1628,8 +1631,8 @@ function renderV(){
 
   /* 调整条 */
   if(window.renderDAdj){
-    if(adjId) window.renderDAdj(adjId, (rows[0]||{}).商品名称||"", (window.splitShop?window.splitShop((rows[0]||{})["店铺名称"]||"").shop:""), (rows[0]||{})["商品名称"]||"", (window.splitShop?window.splitShop((rows[0]||{})["店铺名称"]||"").platform:""));
-    else window.renderDAdj("","","","","");
+    if(adjId) window.renderDAdj(adjId, (rows[0]||{}).商品名称||"", (window.splitShop?window.splitShop((rows[0]||{})["店铺名称"]||"").shop:""), (window.splitShop?window.splitShop((rows[0]||{})["店铺名称"]||"").platform:""));
+    else window.renderDAdj("","","","");
   }
 
   /* 工具条：视图 / 指标 / 分组 */
@@ -1794,8 +1797,11 @@ function vTableAgg(rows){
   const arr=aggregateBy(rows,keyCol);
   const cols=vAggCols(group);
   const unit=group==="shop"?"家店铺":group==="link"?"个链接":"天";
+  /* 主体是链接（或标题下某编码）时，首列日期后挂「改过」标记 */
+  const aid=(typeof vAdjId==="function")?vAdjId():"";
+  const markFn=(aid&&window.adjDateMark)?(r=>window.adjDateMark(aid,r.key)):null;
   $("dBody").innerHTML=`<div class="tablewrap sumtable"><table id="dSumTable"></table></div>`;
-  renderSumTable("dSumTable",cols,arr,V.sort,`汇总（${arr.length} ${unit} · ${rows.length.toLocaleString()} 行）`);
+  renderSumTable("dSumTable",cols,arr,V.sort,`汇总（${arr.length} ${unit} · ${rows.length.toLocaleString()} 行）`,markFn);
 }
 
 /* ---------- 多选弹窗（店铺 / 链接 通用） ---------- */
@@ -2302,7 +2308,7 @@ function agg(rows){
   let amt=0,prof=0,ad=0; const ds=new Set();
   for(const r of rows){ amt+=r.amt; prof+=r.prof; ad+=r.ad; ds.add(r.date); }
   const d=ds.size||1;
-  return {amt,prof,ad,days:ds.size,roi:calcRoi(amt,ad,prof),avgAmt:amt/d,avgProf:prof/d,avgAd:ad/d};
+  return {amt,prof,ad,days:ds.size,roi:calcRoi(amt,ad,prof),pr:amt>0?prof/amt:NaN,avgAmt:amt/d,avgProf:prof/d,avgAd:ad/d};
 }
 function effect(rec){
   const rows=profitIdx().get(norm(rec.linkId));
@@ -2331,11 +2337,13 @@ function verdict(rec,m){
   if(!m) return {k:"no",t:ROWS.length?"该链接无利润数据":"未导入数据",cls:"v-no"};
   if(!m.ok) return {k:"no",t:"前后数据不足",cls:"v-no"};
   if(winDays>0&&!m.complete) return {k:"watch",t:`观察中 ${m.elapsed}/${winDays}天`,cls:"v-watch"};
-  const a=m.prev.roi,b=m.next.roi;
-  if(isNaN(a)||isNaN(b)) return {k:"no",t:"投产不可比",cls:"v-no"};
-  const d=(b-a)/Math.abs(a), p=(d>=0?"+":"")+(d*100).toFixed(0)+"%";
-  if(d>0.05) return {k:"up",t:"有效 "+p,cls:"v-up"};
-  if(d<-0.05) return {k:"down",t:"无效 "+p,cls:"v-down"};
+  /* 判据：观察期平均利润率（Σ经营利润÷Σ成交金额，按成交额加权）的百分点变化 */
+  if(!(m.prev.amt>0)||!(m.next.amt>0)) return {k:"no",t:"观察期无成交",cls:"v-no"};
+  const a=m.prev.pr,b=m.next.pr;
+  if(isNaN(a)||isNaN(b)) return {k:"no",t:"利润率不可比",cls:"v-no"};
+  const d=(b-a)*100, p=(d>=0?"+":"")+d.toFixed(1)+"pp";
+  if(d>=1) return {k:"up",t:"有效 "+p,cls:"v-up"};
+  if(d<=-1) return {k:"down",t:"无效 "+p,cls:"v-down"};
   return {k:"flat",t:"持平 "+p,cls:"v-flat"};
 }
 
@@ -2355,19 +2363,23 @@ window.adjDateMark=function(linkId,date,compact){
   if(!k||!linkId) return "";
   const rs=recsOf(linkId).filter(r=>String(r.time||"").slice(0,10)===k);
   if(!rs.length) return "";
-  const tip=rs.map(r=>[r.plan,r.item,(r.before||r.after)?`${r.before||"—"}→${r.after||"—"}`:"",r.reason].filter(Boolean).join(" ")).join(" / ");
-  return `<span class="dm${compact?" dm-i":""}" data-adj-open="${H(linkId)}" title="当天有投放调整：${H(tip)}">${compact?"✏️":"✏️ 改过"}</span>`;
+  const tip=rs.map(r=>{
+    const it=r.item||r.plan||"调整";
+    const ba=(r.before||r.after)?`${r.before||"—"} → ${r.after||"—"}`:"";
+    return [it+"："+(ba||(r.reason||"")),ba&&r.reason?`（${r.reason}）`:""].join("");
+  }).filter(Boolean).join("\n");
+  return `<span class="dm${compact?" dm-i":""}" data-adj-open="${H(linkId)}" title="当天有投放调整：&#10;${H(tip)}">${compact?"✏️":"✏️ 改过"}</span>`;
 };
 /* 抽屉顶部的调整条 */
 let dAdjLink="";
-window.renderDAdj=function(linkId,title,shop,product,platform){
+window.renderDAdj=function(linkId,title,shop,platform){
   const box=el("dAdj"); if(!box) return;
   const id=String(linkId||"").trim();
   dAdjLink=id;
   if(!id){ box.style.display="none"; box.innerHTML=""; return; }
   const rs=recsOf(id);
   box.style.display="block";
-  const addBtn=`<button class="dadj-add" data-adj-new="${H(id)}" data-adj-title="${H(title||"")}" data-adj-shop="${H(shop||"")}" data-adj-product="${H(product||title||"")}" data-adj-platform="${H(platform||"")}">＋ 记一笔</button>`;
+  const addBtn=`<button class="dadj-add" data-adj-new="${H(id)}" data-adj-title="${H(title||"")}" data-adj-shop="${H(shop||"")}" data-adj-platform="${H(platform||"")}">＋ 记一笔</button>`;
   if(!rs.length){
     box.innerHTML=`<div class="dadj-row"><span class="dadj-t">🎯 投放调整</span>`
       +`<span class="dadj-meta">还没有记录 · 记一笔后，这里会列出每次改动和前后效果</span>${addBtn}</div>`;
@@ -2393,7 +2405,7 @@ document.addEventListener("click",e=>{
   const nw=e.target.closest("[data-adj-new]");
   if(nw){
     e.preventDefault(); e.stopPropagation();
-    openForm({linkId:nw.dataset.adjNew,title:nw.dataset.adjTitle||"",shop:nw.dataset.adjShop||"",product:nw.dataset.adjProduct||"",platform:nw.dataset.adjPlatform||""});
+    openForm({linkId:nw.dataset.adjNew,title:nw.dataset.adjTitle||"",shop:nw.dataset.adjShop||"",platform:nw.dataset.adjPlatform||""});
     return;
   }
   const op=e.target.closest("[data-adj-open]");
@@ -2534,10 +2546,12 @@ function chartSvg(series,opt){
 }
 
 /* ---------- 卡片 ---------- */
-function mc(label,a,b,f){
-  const d=(isNaN(a)||isNaN(b)||!a)?null:(b-a)/Math.abs(a)*100;
+function mc(label,a,b,f,pp){
+  let d;
+  if(pp){ d=(isNaN(a)||isNaN(b))?null:(b-a)*100; }
+  else { d=(isNaN(a)||isNaN(b)||!a)?null:(b-a)/Math.abs(a)*100; }
   const cls=d==null?"":d>0.5?"up":d<-0.5?"down":"";
-  const dt=d==null?"—":`${d>0?"+":""}${d.toFixed(0)}%`;
+  const dt=d==null?"—":`${d>0?"+":""}${d.toFixed(pp?1:0)}${pp?"pp":"%"}`;
   return `<div class="mc"><div class="mcl">${label}</div><div class="mcv">${f(a)} → <b>${f(b)}</b></div><div class="mcd ${cls}">${dt}</div></div>`;
 }
 function metricsHtml(m){
@@ -2547,7 +2561,7 @@ function metricsHtml(m){
     ${mc("日均成交",m.prev.avgAmt,m.next.avgAmt,fm)}
     ${mc("日均净利润",m.prev.avgProf,m.next.avgProf,fm)}
     ${mc("日均推广费",m.prev.avgAd,m.next.avgAd,fm)}
-    ${mc("平衡投产",m.prev.roi,m.next.roi,fr)}
+    ${mc("平均利润率",m.prev.pr,m.next.pr,fPr,true)}
   </div>`;
 }
 function cardHtml(r){
@@ -2590,7 +2604,7 @@ document.addEventListener("click",e=>{
   const act=b.dataset.act;
   if(act==="edit"){ openForm(r); }
   else if(act==="del"){
-    if(!confirm(`删除这条记录？\n${String(r.time||"").slice(0,16)} · ${r.product||""} · ${r.item||""}`)) return;
+    if(!confirm(`删除这条记录？\n${String(r.time||"").slice(0,16)} · ${r.title||r.product||""} · ${r.item||""}`)) return;
     recList=recList.filter(x=>x!==r); saveRecs(); _ridx=null; toast("已删除"); refreshAll();
   }
   else if(act==="toggle"){
@@ -2615,13 +2629,6 @@ function ledgerGroups(){
   gs.sort((a,b)=>String(b.recs[0].time||"").localeCompare(String(a.recs[0].time||"")));
   return {gs,list};
 }
-function effMini(label,a,b,f){
-  if(a==null||b==null||isNaN(a)||isNaN(b)) return "";
-  const d=Math.abs(a)>1e-9?(b-a)/Math.abs(a):0;
-  const cls=d>0.001?"up":d<-0.001?"down":"";
-  const p=(d>=0?"+":"")+(d*100).toFixed(0)+"%";
-  return `<span><span class="e-k">${label}</span> ${f(a)} → ${f(b)} <span class="e-d ${cls}">${p}</span></span>`;
-}
 function pwCardHtml(g){
   const rs=g.recs, last=rs[0];
   const id=String(g.linkId||"");
@@ -2637,13 +2644,16 @@ function pwCardHtml(g){
   const ba=(last.before||last.after)
     ?`<span class="pw-t">${H(last.item||"调整")}</span><span class="pw-b">${H(last.before||"—")}</span><span class="pw-arw">→</span><span class="pw-a">${H(last.after||"—")}</span>`
     :`<span class="pw-t">${H(last.plan||"调整")}</span>`;
-  const kv=(label,a,b,f)=>{
+  /* pp=true 时变化量按百分点显示（利润率口径），否则按相对百分比（金额口径） */
+  const kv=(label,a,b,f,pp)=>{
     if(a==null||b==null||isNaN(a)||isNaN(b)) return "";
-    const d=Math.abs(a)>1e-9?(b-a)/Math.abs(a):0;
-    const cls=d>0.001?"up":d<-0.001?"down":"";
-    return `<div class="pw-kv"><span class="k">${label}</span><span class="v">${f(a)}<span class="arw">→</span>${f(b)}</span><span class="d ${cls}">${(d>=0?"+":"")+(d*100).toFixed(0)}%</span></div>`;
+    let d,unit,dec;
+    if(pp){ d=(b-a)*100; unit="pp"; dec=1; }
+    else { d=Math.abs(a)>1e-9?(b-a)/Math.abs(a)*100:0; unit="%"; dec=0; }
+    const cls=d>0.05?"up":d<-0.05?"down":"";
+    return `<div class="pw-kv"><span class="k">${label}</span><span class="v">${f(a)}<span class="arw">→</span>${f(b)}</span><span class="d ${cls}">${(d>=0?"+":"")+d.toFixed(dec)+unit}</span></div>`;
   };
-  const kvs=(m&&m.ok)?kv("净利润",m.prev.avgProf,m.next.avgProf,fm)+kv("投产",m.prev.roi,m.next.roi,fr):"";
+  const kvs=(m&&m.ok)?kv("净利润",m.prev.avgProf,m.next.avgProf,fm)+kv("利润率",m.prev.pr,m.next.pr,fPr,true):"";
   return `<div class="pw-card" data-open-link="${H(id)}" data-lk="${H(id)}" title="点击查看趋势图与全部调整记录">
     <div class="pw-media">${media}${rs.length>1?`<span class="pw-cnt" title="该链接共有 ${rs.length} 次调整">${rs.length} 次</span>`:""}<span class="pw-hint">点击看趋势与全部记录</span></div>
     <div class="pw-body">
@@ -2679,7 +2689,7 @@ document.addEventListener("click",e=>{
 });
 
 /* ---------- 台账 ---------- */
-let lgRange="30", lgPlatform="", lgVerdict="", lgStatus="", lgKw="";
+let lgRange="30", lgShops=new Set(), lgVerdict="", lgStatus="", lgKw="";
 function ledgerList(){
   let from="";
   if(lgRange==="30") from=shiftDate(today(),-29);
@@ -2688,7 +2698,7 @@ function ledgerList(){
   let list=recList.filter(r=>{
     const d=String(r.time||"").slice(0,10);
     if(from&&d<from) return false;
-    if(lgPlatform&&r.platform!==lgPlatform) return false;
+    if(lgShops.size&&!lgShops.has(r.shop||"")) return false;
     if(lgStatus&&(r.gstat||"进行中")!==lgStatus) return false;
     if(kw){
       const hay=[r.linkId,r.title,r.product,r.item,r.before,r.after,r.reason,r.next,r.shop,r.plan,r.goal].join(" ").toLowerCase();
@@ -2718,6 +2728,7 @@ function renderLedger(){
     ? `<div class="pw">${groups.gs.map(pwCardHtml).join("")}</div>`
     : `<div class="rphint">${recList.length?"当前筛选条件下没有记录":"还没有任何调整记录 —— 点右上角「✏️ 记一笔」开始，或在利润明细表的「调整记录」列点「＋ 记一笔」。"}</div>`);
   el("ledgerCnt").textContent=recList.length;
+  paintLgShopBtn();
 }
 
 /* ---------- 新增 / 编辑表单 ---------- */
@@ -2749,8 +2760,7 @@ function autoFillFromLink(linkId){
   return {
     platform:(rec&&rec.platform)||sp.platform||"",
     shop:sp.shop||(rec&&rec.shop)||(pr&&pr["店铺名称"])||"",
-    title:(rec&&rec.title)||(pr&&pr["商品名称"])||"",
-    product:(rec&&rec.product)||(pr&&pr["商品名称"])||""
+    title:(rec&&rec.title)||(pr&&pr["商品名称"])||""
   };
 }
 function openForm(pre){
@@ -2766,7 +2776,6 @@ function openForm(pre){
   fillShopList();
   el("rmTime").value=String(pre.time||nowLocal()).slice(0,16);
   el("rmLinkId").value=linkId;
-  el("rmProduct").value=pre.product||auto.product||"";
   el("rmTitleIn").value=pre.title||auto.title||"";
   el("rmShop").value=sp.shop||pre.shop||"";
   el("rmItem").value=pre.item||"";
@@ -2787,7 +2796,6 @@ el("rmLinkId").addEventListener("change",()=>{
   const id=el("rmLinkId").value.trim(); if(!id) return;
   const rs=recsOf(id);
   const a=autoFillFromLink(id);
-  if(!el("rmProduct").value&&a.product) el("rmProduct").value=a.product;
   if(!el("rmTitleIn").value&&a.title) el("rmTitleIn").value=a.title;
   if(!el("rmShop").value&&a.shop) el("rmShop").value=a.shop;
   if(a.platform&&!el("rmPlatform").dataset.touched){
@@ -2803,7 +2811,7 @@ el("rmSave").addEventListener("click",()=>{
   const spSave=splitShop(shopRaw);
   const data={
     time:el("rmTime").value, platform:spSave.platform||el("rmPlatform").value,
-    product:el("rmProduct").value.trim(), linkId:el("rmLinkId").value.trim(),
+    linkId:el("rmLinkId").value.trim(),
     title:el("rmTitleIn").value.trim(), shop:spSave.shop||shopRaw,
     plan:el("rmPlan").value, item:el("rmItem").value.trim(),
     before:el("rmBefore").value.trim(), after:el("rmAfter").value.trim(),
@@ -2814,7 +2822,6 @@ el("rmSave").addEventListener("click",()=>{
   if(!data.time) return hint("请填写调整时间",true);
   if(!data.platform) return hint("请选择平台",true);
   if(!data.linkId) return hint("请填写链接ID——它是记录的唯一主体",true);
-  if(!data.product) return hint("请填写产品名",true);
   if(editingId){
     const i=recList.findIndex(r=>String(r.id)===String(editingId));
     if(i>-1) recList[i]=Object.assign({},recList[i],data);
@@ -2841,7 +2848,20 @@ el("lgRange").addEventListener("click",e=>{
   el("lgRange").querySelectorAll(".vtab").forEach(x=>x.classList.toggle("on",x===t));
   renderLedger();
 });
-el("lgPlatform").addEventListener("change",e=>{ lgPlatform=e.target.value; renderLedger(); });
+el("lgShopBtn").addEventListener("click",()=>{
+  const cnt={};
+  recList.forEach(r=>{ const s=r.shop||""; if(s) cnt[s]=(cnt[s]||0)+1; });
+  const items=Object.keys(cnt).sort((a,b)=>a.localeCompare(b,"zh")).map(s=>({value:s,label:s,count:cnt[s]}));
+  if(!items.length) return toast("还没有带店铺的记录");
+  mpOpen({title:"筛选店铺（可多选）",items,sel:lgShops,anchor:"#lgShopBtn",onOk:sel=>{
+    lgShops=new Set(sel); paintLgShopBtn(); renderLedger();
+  }});
+});
+function paintLgShopBtn(){
+  const b=el("lgShopBtn"); if(!b) return;
+  if(!lgShops.size){ b.textContent="🏪 全部店铺"; b.classList.remove("primary"); }
+  else { b.textContent=`🏪 ${lgShops.size} 个店铺`; b.classList.add("primary"); }
+}
 el("lgVerdict").addEventListener("change",e=>{ lgVerdict=e.target.value; renderLedger(); });
 el("lgStatus").addEventListener("change",e=>{ lgStatus=e.target.value; renderLedger(); });
 let lgTimer=null;
@@ -2973,7 +2993,6 @@ document.addEventListener("click",e=>{
 },true);
 
 /* ---------- 初始化 ---------- */
-el("lgPlatform").innerHTML=`<option value="">全部平台</option>`+Object.keys(PLANS).map(p=>`<option>${p}</option>`).join("");
 paintWinChips();
 el("ledgerCnt").textContent=recList.length;
 })();
