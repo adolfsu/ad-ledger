@@ -412,6 +412,264 @@ tbody tr.has-adj>td:first-child{box-shadow:inset 2px 0 0 var(--amber)}
 .rmodal .mhint{font-size:11.5px;color:var(--text3);flex:1}
 .rmodal .mhint.warn{color:var(--amber)}
 </style>
+<style id="apple-inspired-theme">
+:root{
+  color-scheme:light;
+  --bg:#f5f5f7; --panel:rgba(255,255,255,.88); --panel2:#f0f0f2; --border:rgba(29,29,31,.07); --border2:rgba(29,29,31,.11);
+  --text:#1d1d1f; --text2:#626269; --text3:#86868b;
+  --accent:#007aff; --accent2:#007aff; --green:#248a3d; --red:#d70015;
+  --th-bg:rgba(250,250,252,.94); --td-border:rgba(29,29,31,.065); --row-hover:#f6f8fb; --foot-bg:#f2f3f5;
+  --thumb-bg:#f0f0f2; --thumb-tx:#86868b; --soft:#e8f2ff; --soft-tx:#0066cc;
+  --hover:#e9edf3; --hover2:#f3f5f8; --drag:#dceaff;
+  --chip-bg:#f1f5fb; --chip-bd:#d8e5f5;
+  --scroll:#c8c9ce; --scroll-h:#aeb0b7; --shadow-c:rgba(29,35,45,.12);
+  --radius:14px;
+}
+html[data-theme="light"]{
+  color-scheme:light;
+  --bg:#f5f5f7; --panel:rgba(255,255,255,.88); --panel2:#f0f0f2; --border:rgba(29,29,31,.07); --border2:rgba(29,29,31,.11);
+  --text:#1d1d1f; --text2:#626269; --text3:#86868b;
+  --accent:#007aff; --accent2:#007aff; --green:#248a3d; --red:#d70015;
+  --th-bg:rgba(250,250,252,.94); --td-border:rgba(29,29,31,.065); --row-hover:#f6f8fb; --foot-bg:#f2f3f5;
+  --thumb-bg:#f0f0f2; --thumb-tx:#86868b; --soft:#e8f2ff; --soft-tx:#0066cc;
+  --hover:#e9edf3; --hover2:#f3f5f8; --drag:#dceaff;
+  --chip-bg:#f1f5fb; --chip-bd:#d8e5f5;
+  --scroll:#c8c9ce; --scroll-h:#aeb0b7; --shadow-c:rgba(29,35,45,.12);
+}
+html[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#111216; --panel:rgba(30,31,36,.9); --panel2:#25262c; --border:rgba(255,255,255,.08); --border2:rgba(255,255,255,.13);
+  --text:#f5f5f7; --text2:#b2b2ba; --text3:#85858e;
+  --accent:#0a84ff; --accent2:#0a84ff; --green:#30d158; --red:#ff453a;
+  --th-bg:rgba(35,36,42,.96); --td-border:rgba(255,255,255,.07); --row-hover:#24262c; --foot-bg:#202127;
+  --thumb-bg:#292a30; --thumb-tx:#85858e; --soft:#172a40; --soft-tx:#8ec5ff;
+  --hover:#303139; --hover2:#292a31; --drag:#243b57;
+  --chip-bg:#262b34; --chip-bd:#35445a;
+  --scroll:#55565e; --scroll-h:#70717a; --shadow-c:rgba(0,0,0,.38);
+}
+*{ -webkit-tap-highlight-color:transparent }
+body{
+  background:var(--bg); color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+  font-size:13.5px; letter-spacing:-.01em;
+}
+button,input,select,textarea{font:inherit}
+:focus-visible{outline:3px solid color-mix(in srgb,var(--accent) 28%,transparent);outline-offset:2px}
+::-webkit-scrollbar{width:9px;height:9px}
+::-webkit-scrollbar-thumb{background:var(--scroll);border-radius:99px;border:2px solid transparent;background-clip:padding-box}
+.topbar{
+  position:relative; z-index:20; gap:12px; padding:14px 22px 12px;
+  background:color-mix(in srgb,var(--panel) 82%,transparent);
+  border-bottom:1px solid var(--border); box-shadow:0 1px 0 rgba(255,255,255,.22);
+  -webkit-backdrop-filter:saturate(180%) blur(22px); backdrop-filter:saturate(180%) blur(22px);
+}
+.topbar h1{font-size:17px;letter-spacing:-.035em;font-weight:650}
+.topbar h1 .logo{filter:saturate(.8)}
+.topbar h1 .ver{padding:3px 9px;border:0;border-radius:99px;background:var(--panel2);font-size:10px;letter-spacing:.02em}
+.viewtabs{padding:3px;border:0;border-radius:11px;background:var(--panel2);gap:2px}
+.vtab{padding:7px 13px;border-radius:9px;font-size:12.5px;transition:background .18s ease,color .18s ease,box-shadow .18s ease}
+.vtab.on{background:var(--panel);color:var(--text);box-shadow:0 1px 3px rgba(20,25,35,.12);font-weight:600}
+.btn{background:var(--panel);border:1px solid var(--border2);border-radius:10px;padding:7px 12px;color:var(--text2);font-weight:500;transition:transform .16s ease,background .16s ease,border-color .16s ease,box-shadow .16s ease}
+.btn:hover{border-color:color-mix(in srgb,var(--accent) 36%,var(--border2));color:var(--accent);box-shadow:0 2px 8px rgba(0,80,180,.08)}
+.btn:active{transform:scale(.98)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 3px 9px rgba(0,122,255,.2)}
+.btn.primary:hover{background:#147ce5;color:#fff}
+.btn.ghost{background:transparent;border-color:transparent;box-shadow:none}
+.searchbox input,.detailtools input,.sumctrl input[type="date"],.sumctrl select,.pager select,.popover input,.popover select,.colpop input,.dtools input[type="text"],.dtools input[type="date"]{
+  border:1px solid var(--border2);border-radius:10px;background:var(--panel);color:var(--text);box-shadow:inset 0 1px 2px rgba(20,25,35,.025);transition:border-color .16s ease,box-shadow .16s ease;
+}
+.searchbox input:focus,.detailtools input:focus,.sumctrl input:focus,.dtools input:focus{border-color:color-mix(in srgb,var(--accent) 58%,white);box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 12%,transparent)}
+.sortinfo{background:transparent;border:0;padding:0 2px;color:var(--text3)}
+.stats{gap:10px;padding:14px 22px 12px;background:transparent;border:0;scrollbar-width:thin}
+.stat{flex:0 0 auto;min-width:145px;padding:12px 16px;border:1px solid var(--border);border-radius:15px;background:var(--panel);box-shadow:0 3px 12px rgba(25,35,50,.035)}
+.stat:first-child{padding-left:16px}
+.stat:last-child{border-right:1px solid var(--border)}
+.stat .label{font-size:11px;letter-spacing:.015em;color:var(--text3);margin-bottom:6px}
+.stat .val{font-size:17px;letter-spacing:-.025em;font-weight:650}
+.tablewrap{background:transparent;scrollbar-gutter:stable}
+#tableWrap{margin:0 22px 10px;min-height:0;border:1px solid var(--border);border-radius:18px;background:var(--panel);box-shadow:0 6px 24px rgba(25,35,50,.045)}
+table{border-spacing:0}
+th{padding:11px 13px;background:var(--th-bg);color:var(--text3);font-size:11.5px;letter-spacing:.01em;border-bottom:1px solid var(--border);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+th:first-child{padding-left:16px}
+td{padding:9px 13px;font-size:12.5px;line-height:1.45;border-bottom:1px solid var(--td-border)}
+tbody tr:hover td{background:var(--row-hover)}
+td .thumb,td .thumb-ph{border-radius:9px;border-color:var(--border)}
+tfoot td{background:var(--foot-bg);border-top:1px solid var(--border2)}
+.sumwrap{background:transparent}
+.sumctrl{margin:10px 22px 12px;padding:12px 16px;gap:9px;border:1px solid var(--border);border-radius:16px;background:color-mix(in srgb,var(--panel) 88%,transparent);box-shadow:0 4px 16px rgba(25,35,50,.035);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px)}
+.sumctrl .lbl{font-size:11.5px;color:var(--text3)}
+.sumtable{margin:0 22px 10px;border:1px solid var(--border);border-radius:18px;background:var(--panel);box-shadow:0 6px 24px rgba(25,35,50,.045)}
+.pager{gap:8px;padding:10px 22px 14px;background:transparent;border:0;color:var(--text3)}
+.pager button,.pager select{border:1px solid var(--border);border-radius:9px;background:var(--panel);color:var(--text2);padding:6px 10px}
+.pager button:hover:not(:disabled){border-color:var(--accent);color:var(--accent)}
+.filterchip{border:0;border-radius:99px;padding:5px 10px;background:var(--soft);color:var(--soft-tx)}
+.popover,.colpop{border:1px solid var(--border2);border-radius:16px;background:color-mix(in srgb,var(--panel) 90%,transparent);box-shadow:0 16px 48px var(--shadow-c);-webkit-backdrop-filter:blur(22px) saturate(150%);backdrop-filter:blur(22px) saturate(150%)}
+.popover .psearch input,.popover .ptext input,.popover select{border-radius:9px}
+.popover .pitem,.colpop .pitem{padding-top:7px;padding-bottom:7px}
+.overlay{background:rgba(22,25,32,.24);-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px)}
+.drawer{top:10px;right:-900px;height:calc(100vh - 20px);border:1px solid var(--border);border-radius:22px 0 0 22px;background:color-mix(in srgb,var(--panel) 94%,transparent);box-shadow:-18px 0 60px var(--shadow-c);-webkit-backdrop-filter:blur(24px) saturate(145%);backdrop-filter:blur(24px) saturate(145%)}
+.drawer.open{right:10px}
+.drawer .dhead,.drawer .dtabs,.drawer .dtools{border-color:var(--border)}
+.drawer .close,.rmodal .mclose{border-radius:10px}
+.drawer .dtab{border-radius:99px;padding:5px 12px}
+.drawer .dtab.on{background:var(--accent);border-color:var(--accent)}
+.rmodal{background:rgba(20,24,32,.3);-webkit-backdrop-filter:blur(7px);backdrop-filter:blur(7px)}
+.rmodal .mbox{border:1px solid var(--border);border-radius:20px;background:var(--panel);box-shadow:0 24px 80px var(--shadow-c)}
+.rmodal .mhead,.rmodal .mfoot{border-color:var(--border)}
+.fld input,.fld select,.fld textarea{border-radius:10px;background:var(--panel2)}
+.lc-body{padding:18px 22px;gap:14px}
+.pw{gap:12px}
+.pw-card,.pw-card:hover{border-radius:16px}
+.toast{border:1px solid var(--border);border-radius:12px;background:var(--panel);color:var(--text);box-shadow:0 10px 34px var(--shadow-c);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px)}
+.empty{padding:28px;color:var(--text2)}
+.empty .big{font-size:38px;opacity:.78}
+@media(max-width:900px){
+  .topbar{padding:12px 14px;gap:8px}
+  .detailtools{flex-basis:100%;order:5}
+  .stats{padding:12px 14px 10px}
+  #tableWrap,.sumtable{margin-left:14px;margin-right:14px}
+  .sumctrl{margin-left:14px;margin-right:14px}
+  .pager{padding-left:14px;padding-right:14px}
+}
+@media(max-width:600px){
+  body{font-size:13px}
+  .topbar h1{width:100%;font-size:16px}
+  .viewtabs{max-width:100%;overflow-x:auto}
+  .vtab{padding:7px 9px;font-size:11.5px}
+  .topbar>.btn{padding:7px 9px;font-size:11.5px}
+  .stats{gap:8px}
+  .stat{min-width:132px;padding:10px 12px}
+  .stat .val{font-size:15px}
+  #tableWrap,.sumtable{margin-left:8px;margin-right:8px;border-radius:14px}
+  .sumctrl{margin-left:8px;margin-right:8px;border-radius:14px}
+  .drawer,.drawer.open{top:6px;right:6px;height:calc(100vh - 12px);max-width:calc(100vw - 6px);border-radius:18px 0 0 18px}
+  .rmodal{padding:10px}
+  .rmodal .mbox{max-width:100%;max-height:96vh;border-radius:17px}
+}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition-duration:.01ms!important;animation-duration:.01ms!important}}
+</style>
+<style id="drawer-modal-layout">
+.drawer{
+  top:50%; left:50%; right:auto;
+  width:min(1480px,90vw); max-width:none;
+  height:calc(100vh - 36px); max-height:calc(100dvh - 36px);
+  border:1px solid var(--border); border-radius:24px;
+  box-shadow:0 22px 72px var(--shadow-c);
+  transform:translate(-50%,-48%) scale(.985);
+  opacity:0; visibility:hidden; pointer-events:none;
+  transition:opacity .2s ease,transform .2s ease,visibility .2s ease;
+}
+.drawer.open{
+  top:50%; left:50%; right:auto;
+  transform:translate(-50%,-50%) scale(1);
+  opacity:1; visibility:visible; pointer-events:auto;
+}
+#overlay{background:rgba(20,24,32,.34);-webkit-backdrop-filter:blur(7px);backdrop-filter:blur(7px)}
+.drawer .dhead{padding:11px 20px;flex-shrink:0}
+.drawer .dtabs,.drawer .dtools{padding-top:7px;padding-bottom:7px}
+.drawer .dbody{min-height:0}
+@media(max-width:900px){
+  .drawer,.drawer.open{width:calc(100vw - 64px);height:calc(100vh - 24px);max-height:calc(100dvh - 24px);border-radius:20px}
+}
+@media(max-width:600px){
+  .drawer,.drawer.open{width:calc(100vw - 24px);height:calc(100vh - 12px);max-height:calc(100dvh - 12px);border-radius:18px}
+}
+</style>
+<style id="link-field-ux">
+.lf-shell{min-height:100%;padding:12px 18px 26px;display:flex;flex-direction:column;gap:12px}
+.lf-sticky{position:sticky;top:0;z-index:8;padding:10px 12px 9px;border:1px solid var(--border);border-radius:16px;background:color-mix(in srgb,var(--panel) 92%,transparent);box-shadow:0 5px 18px rgba(25,35,50,.05);-webkit-backdrop-filter:blur(20px) saturate(150%);backdrop-filter:blur(20px) saturate(150%)}
+.lf-tabs{display:flex;align-items:center;gap:5px;margin-bottom:9px}
+.lf-tab{border:0;border-radius:9px;padding:7px 12px;background:transparent;color:var(--text2);font:inherit;font-size:12px;cursor:pointer}
+.lf-tab:hover{background:var(--hover2);color:var(--text)}
+.lf-tab.on{background:var(--panel2);color:var(--text);font-weight:650;box-shadow:inset 0 0 0 1px var(--border)}
+.lf-count{margin-left:auto;color:var(--text3);font-size:11.5px}
+.lf-nav,.lf-tools,.lf-trend-controls{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.lf-nav input,.lf-trend-controls input,.lf-trend-controls select,.lf-tools input[type=search]{border:1px solid var(--border2);border-radius:9px;background:var(--panel);color:var(--text);padding:6px 9px;font:inherit;font-size:12px;min-height:32px}
+.lf-nav-hint{color:var(--text3);font-size:11px;margin-left:3px}
+.lf-date-rail{display:flex;gap:5px;overflow:auto;padding:8px 0 2px;scrollbar-width:thin}
+.lf-day-chip{position:relative;flex:0 0 auto;border:1px solid var(--border);border-radius:99px;background:var(--panel);color:var(--text2);padding:4px 10px;font:inherit;font-size:11px;cursor:pointer}
+.lf-day-chip:hover,.lf-day-chip.on{border-color:color-mix(in srgb,var(--accent) 45%,var(--border));color:var(--accent);background:var(--soft)}
+.lf-day-chip i{display:inline-block;width:5px;height:5px;margin-left:5px;border-radius:50%;background:var(--amber);vertical-align:2px}
+.lf-tools{padding-top:7px;border-top:1px solid var(--border)}
+.lf-tools input[type=search]{width:min(300px,100%)}
+.lf-check{display:inline-flex;align-items:center;gap:5px;color:var(--text2);font-size:11.5px;white-space:nowrap;cursor:pointer}
+.lf-check input{accent-color:var(--accent)}
+.lf-tools .btn{padding:5px 9px;font-size:11.5px}
+.lf-day-list{display:flex;flex-direction:column;gap:8px}
+.lf-day{border:1px solid var(--border);border-radius:14px;background:var(--panel);box-shadow:0 2px 9px rgba(25,35,50,.025);overflow:hidden}
+.lf-day[hidden]{display:none!important}
+.lf-day>summary{list-style:none;display:grid;grid-template-columns:auto auto auto minmax(120px,1fr) auto;align-items:center;gap:9px;padding:10px 14px;cursor:pointer;user-select:none}
+.lf-day>summary::-webkit-details-marker{display:none}
+.lf-day>summary:hover{background:var(--row-hover)}
+.lf-day-date{font-size:12.5px;font-weight:650;font-variant-numeric:tabular-nums;color:var(--text)}
+.lf-day-change{font-size:10px;color:var(--accent);white-space:nowrap}
+.lf-watch-line{display:flex;gap:6px;overflow:hidden;min-width:0}
+.lf-watch-item{display:inline-flex;align-items:baseline;gap:5px;max-width:230px;white-space:nowrap;font-size:10.5px;color:var(--text2)}
+.lf-watch-item i{font-style:normal;color:var(--text3);overflow:hidden;text-overflow:ellipsis}
+.lf-watch-item b{font-weight:600;color:var(--text);font-variant-numeric:tabular-nums}
+.lf-watch-empty{font-size:10.5px;color:var(--text3)}
+.lf-chevron{color:var(--text3);transition:transform .16s ease}
+.lf-day[open] .lf-chevron{transform:rotate(180deg)}
+.lf-fields{padding:2px 14px 12px;border-top:1px solid var(--td-border)}
+.lf-field{display:grid;grid-template-columns:minmax(150px, .36fr) minmax(100px,1fr) auto;align-items:baseline;gap:12px;padding:7px 2px;border-bottom:1px solid var(--td-border);font-size:12px}
+.lf-field:last-child{border-bottom:0}
+.lf-field[hidden]{display:none!important}
+.lf-field-name{color:var(--text2);overflow:hidden;text-overflow:ellipsis}
+.lf-field-value{color:var(--text);font-weight:550;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
+.lf-change-tag{font-size:10px;color:var(--amber);white-space:nowrap}
+.lf-field-muted{font-size:10px;color:var(--text3)}
+.lf-no-results,.lf-no-data,.lf-chart-empty,.lf-text-hint{padding:18px;text-align:center;color:var(--text3);font-size:12px;background:var(--panel2);border:1px dashed var(--border2);border-radius:12px}
+.lf-trend-controls{padding:8px 0 1px}
+.lf-trend-controls label{display:flex;align-items:center;gap:6px;color:var(--text3);font-size:11px}
+.lf-trend-controls select{min-width:190px}
+.lf-trend-controls .btn{padding:5px 9px;font-size:11.5px}
+.lf-trend-body{display:flex;flex-direction:column;gap:12px}
+.lf-trend-summary{display:flex;gap:9px;flex-wrap:wrap}
+.lf-kpi{min-width:145px;flex:1;background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:9px 12px;display:flex;flex-direction:column;gap:5px}
+.lf-kpi span{font-size:10.5px;color:var(--text3)}
+.lf-kpi b{font-size:13px;font-weight:650;font-variant-numeric:tabular-nums}
+.lf-kpi .pos{color:var(--green)} .lf-kpi .neg{color:var(--red)}
+.lf-chart{padding:10px 12px 4px;background:var(--panel);border:1px solid var(--border);border-radius:14px;overflow:hidden}
+.lf-chart svg{width:100%;height:auto;display:block;overflow:visible}
+.lf-grid{stroke:var(--td-border);stroke-width:1}
+.lf-axis{fill:var(--text3);font-size:10px}
+.lf-line{fill:none;stroke:var(--accent);stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.lf-point{fill:var(--panel);stroke:var(--accent);stroke-width:2}
+.lf-adj-line{stroke:var(--amber);stroke-width:1.4;stroke-dasharray:4 4;opacity:.78}
+.lf-adj-dot{fill:var(--amber);stroke:var(--panel);stroke-width:1.5;cursor:pointer}
+.lf-adj-marker{cursor:pointer}
+.lf-chart-legend{display:flex;align-items:center;gap:6px;padding:0 4px 4px;color:var(--text3);font-size:10.5px}
+.lf-chart-legend i{width:12px;border-top:2px dashed var(--amber);display:inline-block}
+.lf-table-meta{color:var(--text3);font-size:11px;padding:1px 2px}
+.lf-table-scroll{overflow:auto;border:1px solid var(--border);border-radius:13px;background:var(--panel)}
+.lf-table{width:100%;border-collapse:separate;border-spacing:0}
+.lf-table th{position:sticky;top:0;background:var(--th-bg);z-index:1;text-align:left;padding:9px 12px;font-size:11px;color:var(--text3);border-bottom:1px solid var(--border)}
+.lf-table td{padding:8px 12px;font-size:12px;border-bottom:1px solid var(--td-border);white-space:nowrap}
+.lf-table tr:last-child td{border-bottom:0}
+.lf-table td:first-child{font-variant-numeric:tabular-nums;color:var(--text2)}
+.lf-table td.lf-value{font-weight:550;color:var(--text);white-space:normal;max-width:620px;overflow-wrap:anywhere}
+.lf-table td.pos{color:var(--green)} .lf-table td.neg{color:var(--red)} .lf-table td.lf-changed{color:var(--amber)}
+@media(max-width:760px){
+  .lf-shell{padding:8px 9px 18px;gap:8px}
+  .lf-sticky{padding:8px;border-radius:13px}
+  .lf-day>summary{grid-template-columns:auto auto 1fr auto;gap:6px;padding:9px}
+  .lf-day-change{display:none}
+  .lf-watch-line{grid-column:1/-2;grid-row:2;flex-wrap:wrap}
+  .lf-field{grid-template-columns:minmax(105px,.45fr) minmax(90px,1fr) auto;gap:7px;font-size:11.5px}
+  .lf-trend-controls label{flex-wrap:wrap}
+  .lf-trend-controls select{min-width:140px;max-width:100%}
+  .lf-nav-hint{display:none}
+}
+@media(max-width:480px){
+  .lf-date-rail{max-width:calc(100vw - 50px)}
+  .lf-watch-item{max-width:100%}
+  .lf-trend-controls{align-items:flex-start}
+  .lf-trend-controls label{width:calc(50% - 5px)}
+  .lf-trend-controls select,.lf-trend-controls input{width:100%;min-width:0}
+  .lf-field{grid-template-columns:1fr;gap:2px}
+  .lf-field-muted,.lf-change-tag{justify-self:start}
+}
+</style>
 </head>
 <body>
 
@@ -425,7 +683,7 @@ tbody tr.has-adj>td:first-child{box-shadow:inset 2px 0 0 var(--amber)}
   <button class="btn primary" id="btnImport">📂 导入 CSV</button>
   <button class="btn" id="btnNewRec" title="新增一条投放调整记录">✏️ 记一笔</button>
   <a class="btn" href="https://ss.erp321.com/profit-report/goods-profit" target="_blank" rel="noopener" title="打开利润报表页面导出数据">⬇ 获取数据表</a>
-  <button class="btn ghost" id="themeBtn" title="切换深色/浅色主题">☀️ 浅色</button>
+  <button class="btn ghost" id="themeBtn" title="切换深色/浅色主题">🌙 深色</button>
   <div class="detailtools donly" id="detailTools">
     <div class="searchbox">
       <span class="icon">🔍</span>
@@ -1553,6 +1811,9 @@ function openView(cfg){
     view:cfg.view||"table",
     sort:Object.assign({key:"日期",dir:1},cfg.sort||{}),
     page:1, allFields:false, codes:null, tabId:null,
+    fullMode:"daily", fullField:"", fullRange:{a:"",b:""},
+    fullWatch:new Set(["商品销售数据-商品销售金额(扣退)","利润-经营利润","利润-其中：推广费","经营利润-占比"].filter(h=>HEADERS.includes(h))),
+    fullOpenDates:new Set(), fullFocusDate:"", fullKeyword:"", fullShowEmpty:false, fullChangedOnly:false,
     scope:vNewScope()
   };
   const f=vTop();
@@ -1710,6 +1971,220 @@ function renderV(){
   if(V.group==="row") vTableRows(rows); else vTableAgg(rows);
 }
 
+/* ---------- 单链接：按日字段浏览与单字段趋势 ---------- */
+function lfNumber(v){
+  const s=String(v==null?"":v).trim().replace(/[¥￥元,，\s]/g,"").replace(/%$/,"");
+  return s&&/^[-+]?(?:\d+(?:\.\d*)?|\.\d+)$/.test(s)?Number(s):NaN;
+}
+function lfIsNumericField(col,rows){
+  if(MONEY_COLS.has(col)||PCT_COLS.has(col)) return true;
+  if(/日期|时间|编码|\bid\b|名称|标题|图片|链接|规格|类目|状态|描述|备注|地址|型号/i.test(col)) return false;
+  const vals=(rows||[]).map(r=>String(r[col]??"").trim()).filter(Boolean);
+  if(!vals.length||!vals.every(v=>!Number.isNaN(lfNumber(v)))) return false;
+  return /金额|成本|利润|推广|费|率|占比|数量|销量|库存|价格|产出|收入|退款|订单|点击|访客|转化/i.test(col)||vals.length>0;
+}
+function lfIsPercentField(col,rows){
+  return PCT_COLS.has(col)||(rows||[]).some(r=>/%$/.test(String(r[col]||"").trim()));
+}
+function lfFormatValue(col,value){
+  const s=String(value==null?"":value).trim(); if(!s) return "—";
+  if(MONEY_COLS.has(col)) return fmtMoney(value);
+  if(PCT_COLS.has(col)) return fmtPct(value);
+  return s;
+}
+function lfFormatDelta(col,delta,pct){
+  if(!Number.isFinite(delta)) return "—";
+  const sign=delta>0?"+":delta<0?"−":"";
+  const mag=Math.abs(delta);
+  if(pct) return sign+mag.toFixed(2)+" 个百分点";
+  if(MONEY_COLS.has(col)) return sign+fmtMoney(mag);
+  return sign+mag.toLocaleString("zh-CN",{maximumFractionDigits:2});
+}
+function lfSameValue(col,a,b,numeric){
+  if(numeric){ const x=lfNumber(a),y=lfNumber(b); if(Number.isFinite(x)&&Number.isFinite(y)) return Math.abs(x-y)<1e-9; }
+  return String(a??"")===String(b??"");
+}
+function lfDateKeys(rows){ return [...new Set((rows||[]).map(r=>String(r["日期"]||"").slice(0,10)).filter(d=>/^\d{4}-\d{2}-\d{2}$/.test(d)))].sort(); }
+function lfShiftDate(date,days){ const d=new Date(date+"T00:00:00"); d.setDate(d.getDate()+days); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; }
+function lfAxisValue(col,n,pct){
+  if(pct) return n.toFixed(1)+"%";
+  if(MONEY_COLS.has(col)) return "¥"+(Math.abs(n)>=10000?(n/10000).toFixed(1)+"万":n.toLocaleString("zh-CN",{maximumFractionDigits:0}));
+  return Math.abs(n)>=10000?(n/10000).toFixed(1)+"万":n.toLocaleString("zh-CN",{maximumFractionDigits:1});
+}
+function lfFieldChart(rows,col){
+  const pct=lfIsPercentField(col,rows);
+  const pts=(rows||[]).map(r=>({date:String(r["日期"]||"").slice(0,10),value:lfNumber(r[col])})).filter(p=>p.date&&Number.isFinite(p.value)).sort((a,b)=>a.date.localeCompare(b.date));
+  if(pts.length<2) return `<div class="lf-chart-empty">至少需要两个有值的日期才能绘制趋势（当前 ${pts.length} 个）</div>`;
+  const W=920,H=260,L=82,R=20,T=18,B=38;
+  const times=pts.map(p=>Date.parse(p.date+"T00:00:00")), t0=times[0], t1=times[times.length-1];
+  let lo=Math.min(...pts.map(p=>p.value)),hi=Math.max(...pts.map(p=>p.value));
+  if(lo===hi){ const pad=Math.abs(lo)*.08||1; lo-=pad; hi+=pad; } else { const pad=(hi-lo)*.08; lo-=pad; hi+=pad; }
+  const x=i=>L+(W-L-R)*(times[i]-t0)/((t1-t0)||1);
+  const y=v=>T+(H-T-B)*(1-(v-lo)/(hi-lo));
+  let grid="";
+  for(let i=0;i<=4;i++){
+    const yy=T+(H-T-B)*i/4, val=hi-(hi-lo)*i/4;
+    grid+=`<line x1="${L}" y1="${yy.toFixed(1)}" x2="${W-R}" y2="${yy.toFixed(1)}" class="lf-grid"/>`;
+    grid+=`<text x="${L-9}" y="${(yy+4).toFixed(1)}" text-anchor="end" class="lf-axis">${esc(lfAxisValue(col,val,pct))}</text>`;
+  }
+  const paths=[]; let segment=[];
+  const flush=()=>{ if(segment.length>1) paths.push(`<path d="${segment.map((p,j)=>`${j?"L":"M"}${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(" ")}" class="lf-line"/>`); segment=[]; };
+  for(let i=0;i<pts.length;i++){
+    if(i&&((times[i]-times[i-1])/86400000)>1.5) flush();
+    segment.push({x:x(i),y:y(pts[i].value)});
+  }
+  flush();
+  const labels=[...new Set([0,Math.floor((pts.length-1)/2),pts.length-1])].map(i=>`<text x="${x(i).toFixed(1)}" y="${H-12}" text-anchor="middle" class="lf-axis">${esc(pts[i].date.slice(5))}</text>`).join("");
+  const circles=pts.map((p,i)=>`<circle cx="${x(i).toFixed(1)}" cy="${y(p.value).toFixed(1)}" r="3.5" class="lf-point"><title>${esc(p.date)} · ${esc(lfFormatValue(col,p.value))}</title></circle>`).join("");
+  const adjId=vAdjId();
+  const adjDates=adjId&&window.__rec?window.__rec.list(adjId).map(r=>String(r.time||"").slice(0,10)).filter(d=>d>=pts[0].date&&d<=pts[pts.length-1].date):[];
+  const markers=adjDates.map(d=>{
+    const t=Date.parse(d+"T00:00:00"), xx=L+(W-L-R)*(t-t0)/((t1-t0)||1);
+    return `<g class="lf-adj-marker" data-adj-open="${esc(adjId)}"><line x1="${xx.toFixed(1)}" y1="${T}" x2="${xx.toFixed(1)}" y2="${H-B}" class="lf-adj-line"/><circle cx="${xx.toFixed(1)}" cy="${T+5}" r="4" class="lf-adj-dot"/><title>${esc(d)} · 投放调整（点击查看记录）</title></g>`;
+  }).join("");
+  return `<div class="lf-chart">${markers?'<div class="lf-chart-legend"><i></i>投放调整日</div>':''}<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(dispName(col))} 按日变化趋势">${grid}${markers}${paths.join("")}${circles}${labels}</svg></div>`;
+}
+function lfTrendRows(rows,col,range){
+  const asc=(rows||[]).filter(r=>{
+    const d=String(r["日期"]||"").slice(0,10);
+    return d&&(!range.a||d>=range.a)&&(!range.b||d<=range.b);
+  }).sort((a,b)=>String(a["日期"]||"").localeCompare(String(b["日期"]||"")));
+  let prev=null;
+  return asc.map(r=>{
+    const value=String(r[col]??"").trim(), numeric=lfIsNumericField(col,rows), n=lfNumber(value);
+    let change="—", changed=false;
+    if(value&&prev){
+      if(numeric&&Number.isFinite(n)&&Number.isFinite(prev.n)) change=lfFormatDelta(col,n-prev.n,lfIsPercentField(col,rows));
+      else { changed=value!==prev.value; change=changed?"内容有变化":"未变化"; }
+    }
+    const item={row:r,date:String(r["日期"]||"").slice(0,10),value,n,change,changed};
+    if(value) prev={value,n};
+    return item;
+  });
+}
+function lfFieldTrend(rows){
+  const dates=lfDateKeys(rows);
+  if(!HEADERS.includes(V.fullField)) V.fullField=["利润-经营利润","商品销售数据-商品销售金额(扣退)","利润-其中：推广费"].find(h=>HEADERS.includes(h))||HEADERS.find(h=>lfIsNumericField(h,rows))||HEADERS[0]||"";
+  const col=V.fullField;
+  const filtered=lfTrendRows(rows,col,V.fullRange);
+  const numeric=lfIsNumericField(col,rows), pct=lfIsPercentField(col,rows);
+  const valid=filtered.filter(x=>x.value);
+  const first=valid[0],last=valid[valid.length-1];
+  let summary="";
+  if(first&&last){
+    summary=`<div class="lf-kpi"><span>区间起点 · ${esc(first.date)}</span><b>${esc(lfFormatValue(col,first.value))}</b></div>`
+      +`<div class="lf-kpi"><span>区间终点 · ${esc(last.date)}</span><b>${esc(lfFormatValue(col,last.value))}</b></div>`;
+    if(numeric&&valid.length>1&&Number.isFinite(first.n)&&Number.isFinite(last.n)){
+      const d=last.n-first.n, rate=first.n>0?` · ${(d/first.n*100>0?"+":"")}${(d/first.n*100).toFixed(1)}%`:"";
+      summary+=`<div class="lf-kpi"><span>首尾变化</span><b class="${d>0?"pos":d<0?"neg":""}">${esc(lfFormatDelta(col,d,pct))}${esc(rate)}</b></div>`;
+    }else if(!numeric){
+      const changes=filtered.filter(x=>x.changed).length;
+      summary+=`<div class="lf-kpi"><span>内容变化</span><b>${changes} 次</b></div>`;
+    }
+  }else summary=`<div class="lf-chart-empty">所选日期范围内，这个字段没有可用数据。</div>`;
+  const records=filtered.slice().reverse().map(item=>{
+    const mark=(vAdjId()&&window.adjDateMark)?window.adjDateMark(vAdjId(),item.date):"";
+    const val=item.value?lfFormatValue(col,item.value):"—";
+    const change=item.value?item.change:"—";
+    const cls=item.change.startsWith("+")?"pos":item.change.startsWith("−")?"neg":item.changed?"lf-changed":"";
+    return `<tr><td>${esc(item.date)}${mark}</td><td class="lf-value">${esc(val)}</td><td class="${cls}">${esc(change)}</td></tr>`;
+  }).join("");
+  const datesLine=dates.length?`数据范围：${esc(dates[0])} ~ ${esc(dates[dates.length-1])} · ${dates.length} 个有数据日期`:"当前无日期数据";
+  return `<div class="lf-trend-summary">${summary}</div>`
+    +(numeric?lfFieldChart(filtered.map(x=>x.row),col):`<div class="lf-text-hint">文本字段不绘制数值曲线；下表会标出内容发生变化的日期。</div>`)
+    +`<div class="lf-table-meta">${datesLine} · 当前范围 ${valid.length} 个有效值</div>`
+    +`<div class="lf-table-scroll"><table class="lf-table"><thead><tr><th>日期</th><th>${esc(dispName(col))}</th><th>${numeric?"较上一有值日期":"变化"}</th></tr></thead><tbody>${records||'<tr><td colspan="3" class="lf-no-data">没有可显示的数据</td></tr>'}</tbody></table></div>`;
+}
+function lfApplyDailyFilters(){
+  const body=$("dBody"); if(!body) return;
+  const kw=(V.fullKeyword||"").trim().toLowerCase(), only=!!V.fullChangedOnly, showEmpty=!!V.fullShowEmpty;
+  let shown=0;
+  body.querySelectorAll(".lf-day").forEach(day=>{
+    let count=0;
+    day.querySelectorAll(".lf-field").forEach(field=>{
+      const text=(field.dataset.header+" "+field.dataset.value).toLowerCase();
+      const ok=(!kw||text.includes(kw))&&(showEmpty||field.dataset.empty!=="1")&&(!only||field.dataset.changed==="1");
+      field.hidden=!ok; if(ok) count++;
+    });
+    const active=!!kw||only;
+    day.hidden=active&&count===0;
+    if(!day.hidden) shown++;
+  });
+  const none=body.querySelector(".lf-no-results");
+  if(none) none.hidden=shown>0;
+}
+function lfJumpToDate(wanted,step){
+  const dates=lfDateKeys(vRows()); if(!dates.length) return;
+  let target="";
+  if(typeof step==="number"){
+    const current=dates.includes(V.fullFocusDate)?V.fullFocusDate:dates[dates.length-1];
+    const i=dates.indexOf(current); target=dates[Math.max(0,Math.min(dates.length-1,i+step))];
+  }else if(wanted==="latest") target=dates[dates.length-1];
+  else if(!wanted) target=dates.includes(V.fullFocusDate)?V.fullFocusDate:dates[dates.length-1];
+  else if(dates.includes(wanted)) target=wanted;
+  else{
+    const t=Date.parse(String(wanted||"")+"T00:00:00");
+    target=dates.reduce((best,d)=>Math.abs(Date.parse(d+"T00:00:00")-t)<Math.abs(Date.parse(best+"T00:00:00")-t)?d:best,dates[0]);
+    if(wanted) toast(`该日期没有记录，已定位到最近的有数据日期：${target}`);
+  }
+  V.fullMode="daily"; V.fullFocusDate=target; V.fullOpenDates.add(target); renderV();
+  requestAnimationFrame(()=>{ const card=document.getElementById("lf-day-"+target); if(card){card.open=true;card.scrollIntoView({behavior:"smooth",block:"center"});} });
+}
+function lfRenderDaily(rows){
+  const asc=rows.slice().sort((a,b)=>String(a["日期"]||"").localeCompare(String(b["日期"]||"")));
+  const dates=lfDateKeys(rows), desc=dates.slice().reverse(), map=new Map();
+  for(const r of asc){ const d=String(r["日期"]||"").slice(0,10); if(d&&!map.has(d)) map.set(d,r); }
+  if(!V.fullFocusDate&&dates.length) V.fullFocusDate=dates[dates.length-1];
+  const numeric=new Set(HEADERS.filter(h=>lfIsNumericField(h,rows)));
+  const watch=HEADERS.filter(h=>V.fullWatch.has(h)).slice(0,4);
+  const recs=(vAdjId()&&window.__rec)?window.__rec.list(vAdjId()):[];
+  const adjDates=new Set(recs.map(r=>String(r.time||"").slice(0,10)).filter(Boolean));
+  const recent=dates.slice(-12).reverse();
+  const rail=recent.map(d=>`<button type="button" class="lf-day-chip${d===V.fullFocusDate?" on":""}${adjDates.has(d)?" has-adj":""}" data-lf-datejump="${esc(d)}" title="${adjDates.has(d)?"当天有投放调整 · ":""}${esc(d)}">${esc(d.slice(5))}${adjDates.has(d)?'<i></i>':""}</button>`).join("");
+  const cards=desc.map(d=>{
+    const r=map.get(d)||{}, prevIndex=dates.indexOf(d)-1, prev=prevIndex>=0?map.get(dates[prevIndex]):null;
+    let changedCount=0;
+    const fields=HEADERS.map(h=>{
+      const value=String(r[h]??"").trim(), previous=prev?String(prev[h]??"").trim():"";
+      const changed=!!prev&&!lfSameValue(h,value,previous,numeric.has(h)); if(changed) changedCount++;
+      return `<div class="lf-field" data-header="${esc(h)}" data-value="${esc(value)}" data-empty="${value?"0":"1"}" data-changed="${changed?"1":"0"}">`
+        +`<span class="lf-field-name">${esc(dispName(h))}</span><span class="lf-field-value">${esc(lfFormatValue(h,value))}</span>`
+        +(changed?`<span class="lf-change-tag" title="与上一有数据日期 ${esc(dates[prevIndex])} 不同">有变化</span>`:`<span class="lf-field-muted">${prev?"未变化":""}</span>`)
+        +`</div>`;
+    }).join("");
+    const watchHtml=watch.map(h=>r[h]?`<span class="lf-watch-item"><i>${esc(dispName(h))}</i><b>${esc(lfFormatValue(h,r[h]))}</b></span>`:"").filter(Boolean).join("");
+    const mark=(vAdjId()&&window.adjDateMark)?window.adjDateMark(vAdjId(),d):"";
+    return `<details class="lf-day" id="lf-day-${esc(d)}" data-lf-date="${esc(d)}"${V.fullOpenDates.has(d)?" open":""}>`
+      +`<summary><span class="lf-day-date">${esc(d)}</span>${mark}<span class="lf-day-change">${changedCount?changedCount+" 项变化":""}</span>`
+      +`<span class="lf-watch-line">${watchHtml||'<span class="lf-watch-empty">可在“关注字段”中设置摘要</span>'}</span><span class="lf-chevron">⌄</span></summary>`
+      +`<div class="lf-fields">${fields}</div></details>`;
+  }).join("");
+  return `<div class="lf-shell"><div class="lf-sticky">`
+    +`<div class="lf-tabs"><button type="button" class="lf-tab on" data-lf-mode="daily">每日字段</button><button type="button" class="lf-tab" data-lf-mode="trend">字段趋势</button><span class="lf-count">${dates.length} 个有数据日期</span></div>`
+    +`<div class="lf-nav"><button type="button" class="btn" data-lf-step="-1" title="更早一个有数据日期">‹ 更早</button><input id="lfDayJump" type="date" min="${dates[0]||""}" max="${dates[dates.length-1]||""}" value="${esc(V.fullFocusDate||"")}"><button type="button" class="btn" data-lf-step="1" title="较新一个有数据日期">较新 ›</button><button type="button" class="btn ghost" data-lf-latest>最近</button><span class="lf-nav-hint">${V.fullFocusDate?esc(V.fullFocusDate):"选择日期跳转"}</span></div>`
+    +`<div class="lf-date-rail">${rail||'<span class="lf-watch-empty">暂无日期</span>'}</div>`
+    +`<div class="lf-tools"><input id="lfFieldSearch" type="search" placeholder="搜索字段名或内容…" value="${esc(V.fullKeyword)}"><button type="button" class="btn" id="lfWatchBtn">关注字段${watch.length?` · ${watch.length}`:""}</button>`
+    +`<label class="lf-check"><input id="lfShowEmpty" type="checkbox" ${V.fullShowEmpty?"checked":""}>显示空字段</label><label class="lf-check"><input id="lfChangedOnly" type="checkbox" ${V.fullChangedOnly?"checked":""}>只看变化</label>`
+    +`<button type="button" class="btn ghost" data-lf-action="expand">全部展开</button><button type="button" class="btn ghost" data-lf-action="collapse">全部折叠</button></div></div>`
+    +`<div class="lf-day-list">${cards||'<div class="lf-no-data">暂无日期数据</div>'}</div><div class="lf-no-results" hidden>没有符合条件的字段。</div></div>`;
+}
+function lfRenderTrend(rows){
+  const dates=lfDateKeys(rows);
+  if(!V.fullField||!HEADERS.includes(V.fullField)) V.fullField=["利润-经营利润","商品销售数据-商品销售金额(扣退)","利润-其中：推广费"].find(h=>HEADERS.includes(h))||HEADERS.find(h=>lfIsNumericField(h,rows))||HEADERS[0]||"";
+  const col=V.fullField;
+  const opts=HEADERS.map(h=>`<option value="${esc(h)}"${h===col?" selected":""}>${esc(dispName(h))}</option>`).join("");
+  const trend=lfTrendRows(rows,col,V.fullRange);
+  const body=lfFieldTrend(rows);
+  return `<div class="lf-shell"><div class="lf-sticky"><div class="lf-tabs"><button type="button" class="lf-tab" data-lf-mode="daily">每日字段</button><button type="button" class="lf-tab on" data-lf-mode="trend">字段趋势</button><span class="lf-count">逐日查看，不做日聚合</span></div>`
+    +`<div class="lf-trend-controls"><label>字段<select id="lfTrendField">${opts}</select></label><label>开始<input id="lfTrendA" type="date" min="${dates[0]||""}" max="${dates[dates.length-1]||""}" value="${esc(V.fullRange.a)}"></label><label>结束<input id="lfTrendB" type="date" min="${dates[0]||""}" max="${dates[dates.length-1]||""}" value="${esc(V.fullRange.b)}"></label><button type="button" class="btn ghost" data-lf-range="all">全部</button><button type="button" class="btn ghost" data-lf-range="30">近30天</button><button type="button" class="btn ghost" data-lf-range="90">近90天</button></div></div>`
+    +`<div class="lf-trend-body">${body}</div></div>`;
+}
+function renderLinkFieldExperience(rows){
+  const body=$("dBody");
+  body.innerHTML=V.fullMode==="trend"?lfRenderTrend(rows):lfRenderDaily(rows);
+  if(V.fullMode!=="trend") lfApplyDailyFilters();
+  $("dPager").innerHTML="";
+}
 /* ---------- 表格：逐行 ---------- */
 function vTableRows(rows){
   const f=vTop(), adjId=vAdjId();
@@ -1720,6 +2195,10 @@ function vTableRows(rows){
   const slice=sorted.slice((V.page-1)*size,V.page*size);
   const body=$("dBody");
 
+  if(V.allFields && (f.kind==="link"||f.kind==="title")){
+    renderLinkFieldExperience(rows);
+    return;
+  }
   if(V.allFields){
     let h="";
     for(const r of slice){
@@ -1876,6 +2355,56 @@ $("dGrpSw").addEventListener("click",e=>{
   renderV();
 });
 $("dFields").onclick=()=>{ if(!V) return; V.allFields=!V.allFields; renderV(); };
+/* 单链接字段浏览器：日期跳转、关注字段、筛选和趋势范围 */
+$("dBody").addEventListener("click",e=>{
+  if(!V) return;
+  const mode=e.target.closest("[data-lf-mode]");
+  if(mode){ V.fullMode=mode.dataset.lfMode; renderV(); return; }
+  const jump=e.target.closest("[data-lf-datejump]");
+  if(jump){ lfJumpToDate(jump.dataset.lfDatejump); return; }
+  if(e.target.closest("[data-lf-step]")){ lfJumpToDate("",Number(e.target.closest("[data-lf-step]").dataset.lfStep)); return; }
+  if(e.target.closest("[data-lf-latest]")){ lfJumpToDate("latest"); return; }
+  const action=e.target.closest("[data-lf-action]");
+  if(action){
+    const open=action.dataset.lfAction==="expand";
+    $("dBody").querySelectorAll("details.lf-day").forEach(card=>{ card.open=open; if(open)V.fullOpenDates.add(card.dataset.lfDate); else V.fullOpenDates.delete(card.dataset.lfDate); });
+    return;
+  }
+  const range=e.target.closest("[data-lf-range]");
+  if(range){
+    if(range.dataset.lfRange==="all") V.fullRange={a:"",b:""};
+    else{
+      const dates=lfDateKeys(vRows()); if(!dates.length) return;
+      const end=dates[dates.length-1], days=Number(range.dataset.lfRange);
+      const start=lfShiftDate(end,-days+1); V.fullRange={a:dates[0]>start?dates[0]:start,b:end};
+    }
+    V.fullMode="trend"; renderV(); return;
+  }
+  if(e.target.closest("#lfWatchBtn")){
+    mpOpen({title:"选择关注字段（最多展示前 4 项）",items:HEADERS.map(h=>({value:h,label:dispName(h)})),sel:V.fullWatch,anchor:"#lfWatchBtn",onOk:sel=>{V.fullWatch=sel;renderV();}});
+  }
+});
+$("dBody").addEventListener("input",e=>{
+  if(!V||!e.target.matches("#lfFieldSearch")) return;
+  V.fullKeyword=e.target.value; lfApplyDailyFilters();
+});
+$("dBody").addEventListener("change",e=>{
+  if(!V) return;
+  if(e.target.matches("#lfDayJump")){ lfJumpToDate(e.target.value); return; }
+  if(e.target.matches("#lfShowEmpty")){ V.fullShowEmpty=e.target.checked; lfApplyDailyFilters(); return; }
+  if(e.target.matches("#lfChangedOnly")){ V.fullChangedOnly=e.target.checked; lfApplyDailyFilters(); return; }
+  if(e.target.matches("#lfTrendField")){ V.fullField=e.target.value; renderV(); return; }
+  if(e.target.matches("#lfTrendA,#lfTrendB")){
+    const a=$("lfTrendA").value,b=$("lfTrendB").value;
+    if(a&&b&&a>b){ toast("开始日期不能晚于结束日期"); renderV(); return; }
+    V.fullRange={a,b}; renderV();
+  }
+});
+$("dBody").addEventListener("toggle",e=>{
+  if(!V||!e.target.matches("details.lf-day")) return;
+  const d=e.target.dataset.lfDate;
+  if(e.target.open) V.fullOpenDates.add(d); else V.fullOpenDates.delete(d);
+},true);
 $("dBack").onclick=()=>{ if(!V||V.stack.length<2) return; V.stack.pop(); V.page=1; V.sort={key:"日期",dir:1}; V.allFields=false; renderV(); };
 $("dBase").addEventListener("click",e=>{
   const c=e.target.closest(".crumb"); if(!c||!V) return;
@@ -1923,7 +2452,7 @@ $("dLinkBtn").onclick=()=>{
 $("dTabs").addEventListener("click",e=>{
   const t=e.target.closest(".dtab"); if(!t||!V) return;
   if(V.tabId===t.dataset.tab) return;
-  V.tabId=t.dataset.tab; V.page=1; renderV();
+  V.tabId=t.dataset.tab; V.page=1; V.fullOpenDates.clear(); V.fullFocusDate=""; renderV();
 });
 $("dBody").addEventListener("click",e=>{
   if(!V) return;
