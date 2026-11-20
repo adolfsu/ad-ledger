@@ -644,6 +644,8 @@ tfoot td{background:var(--foot-bg);border-top:1px solid var(--border2)}
 .lf-table-scroll{overflow:auto;border:1px solid var(--border);border-radius:13px;background:var(--panel)}
 .lf-table{width:100%;border-collapse:separate;border-spacing:0}
 .lf-table th{position:sticky;top:0;background:var(--th-bg);z-index:1;text-align:left;padding:9px 12px;font-size:11px;color:var(--text3);border-bottom:1px solid var(--border)}
+.lf-table th.num,.lf-table td.num{text-align:right}
+.drawer .dbody table th.num .hwrap{width:100%;justify-content:flex-end}
 .lf-table td{padding:8px 12px;font-size:12px;border-bottom:1px solid var(--td-border);white-space:nowrap}
 .lf-table tr:last-child td{border-bottom:0}
 .lf-table td:first-child{font-variant-numeric:tabular-nums;color:var(--text2)}
@@ -2087,13 +2089,13 @@ function lfFieldTrend(rows){
     const val=item.value?lfFormatValue(col,item.value):"—";
     const change=item.value?item.change:"—";
     const cls=item.change.startsWith("+")?"pos":item.change.startsWith("−")?"neg":item.changed?"lf-changed":"";
-    return `<tr><td>${esc(item.date)}${mark}</td><td class="lf-value">${esc(val)}</td><td class="${cls}">${esc(change)}</td></tr>`;
+    return `<tr><td>${esc(item.date)}${mark}</td><td class="lf-value${numeric?" num":""}">${esc(val)}</td><td class="${cls}${numeric?" num":""}">${esc(change)}</td></tr>`;
   }).join("");
   const datesLine=dates.length?`数据范围：${esc(dates[0])} ~ ${esc(dates[dates.length-1])} · ${dates.length} 个有数据日期`:"当前无日期数据";
   return `<div class="lf-trend-summary">${summary}</div>`
     +(numeric?lfFieldChart(filtered.map(x=>x.row),col):`<div class="lf-text-hint">文本字段不绘制数值曲线；下表会标出内容发生变化的日期。</div>`)
     +`<div class="lf-table-meta">${datesLine} · 当前范围 ${valid.length} 个有效值</div>`
-    +`<div class="lf-table-scroll"><table class="lf-table"><thead><tr><th>日期</th><th>${esc(dispName(col))}</th><th>${numeric?"较上一有值日期":"变化"}</th></tr></thead><tbody>${records||'<tr><td colspan="3" class="lf-no-data">没有可显示的数据</td></tr>'}</tbody></table></div>`;
+    +`<div class="lf-table-scroll"><table class="lf-table"><thead><tr><th>日期</th><th class="${numeric?"num":""}">${esc(dispName(col))}</th><th class="${numeric?"num":""}">${numeric?"较上一有值日期":"变化"}</th></tr></thead><tbody>${records||'<tr><td colspan="3" class="lf-no-data">没有可显示的数据</td></tr>'}</tbody></table></div>`;
 }
 function lfApplyDailyFilters(){
   const body=$("dBody"); if(!body) return;
@@ -3170,7 +3172,8 @@ function ledgerGroups(){
   const gs=[...map.values()];
   for(const g of gs) g.recs.sort((a,b)=>String(b.time||"").localeCompare(String(a.time||"")));
   gs.sort((a,b)=>String(b.recs[0].time||"").localeCompare(String(a.recs[0].time||"")));
-  return {gs,list};
+  const visible=lgStatus?gs.filter(g=>(g.recs[0].gstat||"进行中")===lgStatus):gs;
+  return {gs:visible,list:visible.flatMap(g=>g.recs)};
 }
 function pwCardHtml(g){
   const rs=g.recs, last=rs[0];
@@ -3242,7 +3245,6 @@ function ledgerList(){
     const d=String(r.time||"").slice(0,10);
     if(from&&d<from) return false;
     if(lgShops.size&&!lgShops.has(r.shop||"")) return false;
-    if(lgStatus&&(r.gstat||"进行中")!==lgStatus) return false;
     if(kw){
       const hay=[r.linkId,r.title,r.product,r.item,r.before,r.after,r.reason,r.next,r.shop,r.plan,r.goal].join(" ").toLowerCase();
       if(hay.indexOf(kw)<0) return false;
@@ -3253,7 +3255,8 @@ function ledgerList(){
   return list.sort((a,b)=>String(b.time||"").localeCompare(String(a.time||"")));
 }
 function renderLedger(){
-  const list=ledgerList();
+  const groups=ledgerGroups();
+  const list=groups.list;
   let up=0,down=0,flat=0,watch=0,no=0;
   for(const r of list){ const k=verdict(r,effect(r)).k; if(k==="up")up++; else if(k==="down")down++; else if(k==="flat")flat++; else if(k==="watch")watch++; else no++; }
   const links=new Set(list.map(r=>norm(r.linkId)).filter(Boolean)).size;
@@ -3266,7 +3269,6 @@ function renderLedger(){
     (no?f("无数据",no):"")+
     `<div class="stat"><div class="label">对比窗口</div><div class="val" style="font-size:13px">${winDays>0?`前后各 ${winDays} 天`:"全部历史"}</div></div>`;
   const note=ROWS.length?"":`<div class="rphint" style="margin:0 0 12px">当前未导入利润 CSV：记录可正常查看与编辑，导入后自动补齐「有效 / 无效」判定与前后对比。</div>`;
-  const groups=ledgerGroups();
   el("lgList").innerHTML=note+(groups.gs.length
     ? `<div class="pw">${groups.gs.map(pwCardHtml).join("")}</div>`
     : `<div class="rphint">${recList.length?"当前筛选条件下没有记录":"还没有任何调整记录 —— 点右上角「✏️ 记一笔」开始，或在利润明细表的「调整记录」列点「＋ 记一笔」。"}</div>`);
