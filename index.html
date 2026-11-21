@@ -672,11 +672,75 @@ tfoot td{background:var(--foot-bg);border-top:1px solid var(--border2)}
   .lf-field-muted,.lf-change-tag{justify-self:start}
 }
 </style>
+<style id="record-form-ux">
+#recModal{-webkit-backdrop-filter:none;backdrop-filter:none}
+#recModal .mbox{width:760px;max-width:96vw;max-height:calc(100dvh - 28px);background:var(--bg);isolation:isolate}
+#recModal .mhead{padding:13px 20px;flex-shrink:0}
+#recModal .mbody{padding:14px 20px;gap:12px 14px;min-height:0;overscroll-behavior:contain}
+#recModal .mfoot{padding:12px 20px;flex-shrink:0}
+#recModal .mbody>.full{grid-column:1/-1}
+#recModal .fld label{font-size:12px;font-weight:550;color:var(--text2)}
+#recModal .fld textarea{min-height:55px;line-height:1.55}
+#recModal .rm-identity{border:1px solid var(--border);border-radius:13px;background:var(--panel2);overflow:hidden}
+#recModal .rm-identity:not([open]){min-height:78px}
+#recModal .rm-identity>summary{display:flex;align-items:center;justify-content:space-between;gap:16px;list-style:none;padding:11px 13px;cursor:pointer}
+#recModal .rm-identity>summary::-webkit-details-marker{display:none}
+#recModal .rm-identity-copy{display:flex;flex-direction:column;gap:3px;min-width:0}
+#recModal .rm-section-label{font-size:10px;font-weight:550;color:var(--text3);letter-spacing:.04em}
+#recModal .rm-identity-copy strong{font-size:12.5px;line-height:1.45;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#rmIdentityMeta{font-size:11px;line-height:1.45;color:var(--text2);overflow-wrap:anywhere}
+#recModal .rm-identity-edit{display:inline-flex;align-items:center;gap:6px;color:var(--accent);font-size:11px;white-space:nowrap;flex-shrink:0}
+#recModal .rm-when-open{display:none}
+#recModal .rm-identity[open] .rm-when-open{display:inline}
+#recModal .rm-identity[open] .rm-when-closed{display:none}
+#recModal .rm-identity-chevron{color:var(--text3);transition:transform .16s ease}
+#recModal .rm-identity[open] .rm-identity-chevron{transform:rotate(180deg)}
+#recModal .rm-identity-fields{display:grid;grid-template-columns:1fr 1fr;gap:11px 14px;padding:12px 13px;border-top:1px solid var(--border)}
+#recModal .rm-identity-fields>.full{grid-column:1/-1}
+#recModal .rm-identity-fields input,#recModal .rm-identity-fields select{background:var(--panel)}
+#recModal .rm-quick{display:flex;flex-direction:column;gap:5px;min-width:0}
+#recModal .rm-quick-bar{display:flex;align-items:center;gap:10px;min-height:20px}
+#recModal .rm-quick-help{color:var(--text3);font-size:10.5px;flex:1}
+#recModal .rm-quick-link{padding:1px 0;border:0;background:transparent;color:var(--accent);font:inherit;font-size:11px;cursor:pointer;white-space:nowrap}
+#recModal .rm-quick-link:hover{text-decoration:underline}
+#recModal .rm-quick-list{display:flex;gap:5px;flex-wrap:wrap;align-items:center;max-height:112px;overflow:auto;padding:1px}
+#recModal .rm-quick-chip{display:inline-flex;max-width:100%;align-items:stretch;border:1px solid var(--border2);border-radius:8px;background:var(--panel2);overflow:hidden}
+#recModal .rm-quick-chip.is-used{background:var(--soft);border-color:var(--chip-bd)}
+#recModal .rm-quick-chip button{border:0;background:transparent;font:inherit;font-size:11px;cursor:pointer;color:var(--text2);padding:4px 8px}
+#recModal .rm-quick-chip button:hover{background:var(--hover);color:var(--accent)}
+#recModal .rm-quick-chip button[data-rmq-action="apply"]{max-width:290px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:left}
+#recModal .rm-quick-chip.is-used button[data-rmq-action="apply"]{color:var(--soft-tx)}
+#recModal .rm-quick-chip button[data-rmq-action="edit"],#recModal .rm-quick-chip button[data-rmq-action="remove"]{padding:4px 6px;border-left:1px solid var(--border);font-size:10px;flex-shrink:0}
+#recModal .rm-quick-chip button[data-rmq-action="remove"]:hover{color:var(--red)}
+#recModal .rm-quick-empty{font-size:11px;color:var(--text3);padding:3px 0}
+#recModal .rm-quick-editor{border:1px solid var(--border);border-radius:10px;padding:9px;background:var(--panel2);display:flex;flex-direction:column;gap:7px}
+#recModal .rm-quick-editor label{font-size:11px;color:var(--text2)}
+#recModal .rm-quick-editor textarea{font-size:12px;background:var(--panel);min-height:45px;padding:7px 9px}
+#recModal .rm-quick-editor-actions{display:flex;align-items:center;gap:7px}
+#recModal .rm-quick-editor-actions .btn{padding:4px 9px;font-size:11px}
+#recModal .rm-quick-note{margin-right:auto;color:var(--text3);font-size:10.5px}
+#recModal .rm-quick-error{color:var(--red);font-size:11px}
+@media(max-width:600px){
+  #recModal{padding:8px}
+  #recModal .mbox{max-width:100%;max-height:calc(100dvh - 16px)}
+  #recModal .mhead,#recModal .mfoot{padding:11px 13px}
+  #recModal .mbody{padding:12px 13px;gap:11px}
+  #recModal .rm-identity>summary{gap:9px;padding:10px}
+  #recModal .rm-identity-copy strong{max-width:52vw}
+  #recModal .rm-quick-chip button[data-rmq-action="apply"]{max-width:210px}
+  #recModal .rm-quick-note{display:none}
+}
+@media(max-width:400px){
+  #recModal .mbody,#recModal .rm-identity-fields{grid-template-columns:minmax(0,1fr)}
+  #recModal .rm-identity-copy strong{max-width:48vw}
+}
+</style>
+
 </head>
 <body>
 
 <div class="topbar" id="topbar">
-  <h1><span class="logo">📊</span>投放利润看板<span class="ver" id="verBadge" title="2026-11-13 顶栏搜索/排序/显示列仅明细页显示">v1.3.1</span></h1>
+  <h1><span class="logo">📊</span>投放利润看板<span class="ver" id="verBadge" title="2026-11-21 苹果风格界面、大弹窗、单链接字段浏览与趋势、链接状态筛选、记一笔快捷项">v1.4.0</span></h1>
   <div class="viewtabs" id="viewTabs">
     <span class="vtab on" data-view="detail">📋 明细</span>
     <span class="vtab" data-view="sum">📊 汇总</span>
@@ -843,25 +907,33 @@ tfoot td{background:var(--foot-bg);border-top:1px solid var(--border2)}
 
 <div class="lightbox" id="lightbox" onclick="this.style.display='none'"><img id="lightboxImg" src="" alt=""></div>
 
-<div class="rmodal" id="recModal">
+<div class="rmodal" id="recModal" role="dialog" aria-modal="true" aria-labelledby="rmHead">
   <div class="mbox">
-    <div class="mhead"><b id="rmHead">新增调整记录</b><button class="mclose" id="rmClose">✕</button></div>
+    <div class="mhead"><b id="rmHead">新增调整记录</b><button type="button" class="mclose" id="rmClose" aria-label="关闭调整记录">✕</button></div>
     <div class="mbody">
-      <div class="fld"><label>调整时间<i>*</i></label><input type="datetime-local" id="rmTime"></div>
-      <div class="fld"><label>平台<i>*</i></label><select id="rmPlatform"></select></div>
-      <div class="fld full"><label>链接ID<i>*</i></label><input type="text" id="rmLinkId" placeholder="粘贴链接ID，自动匹配历史记录与利润表"><div class="tip" id="rmLinkTip">链接ID 是唯一主体，产品信息自动从利润表带出</div></div>
-      <div class="fld"><label>店铺</label><input type="text" id="rmShop" list="rmShopList" placeholder="选填"><datalist id="rmShopList"></datalist></div>
-      <div class="fld"><label>商品标题</label><input type="text" id="rmTitleIn" placeholder="选填，便于搜索"></div>
-      <div class="fld"><label>计划类型</label><select id="rmPlan"></select></div>
-      <div class="fld"><label>调整项</label><input type="text" id="rmItem" placeholder="如 日限额 / 投产目标 / 计划类型"></div>
-      <div class="fld"><label>改动前</label><input type="text" id="rmBefore" placeholder="如 1.8"></div>
-      <div class="fld"><label>改动后</label><input type="text" id="rmAfter" placeholder="如 2.2"></div>
-      <div class="fld full"><label>为什么改</label><textarea id="rmReason" placeholder="当时的判断依据"></textarea></div>
-      <div class="fld full"><label>后续计划 / 目标</label><textarea id="rmNext" placeholder="打算怎么观察或继续调"></textarea></div>
-      <div class="fld"><label>结论</label><select id="rmConcl"><option>待观察</option><option>有效</option><option>无效</option><option>持平</option></select></div>
-      <div class="fld"><label>目标状态</label><select id="rmStat"><option>进行中</option><option>已完成</option></select></div>
+      <details class="rm-identity full" id="rmIdentity">
+        <summary>
+          <span class="rm-identity-copy"><span class="rm-section-label">链接信息</span><strong id="rmIdentityTitle">选择要记录的链接</strong><span id="rmIdentityMeta"></span></span>
+          <span class="rm-identity-edit"><span class="rm-when-closed">查看并修改</span><span class="rm-when-open">收起信息</span><span class="rm-identity-chevron" aria-hidden="true">⌄</span></span>
+        </summary>
+        <div class="rm-identity-fields">
+          <div class="fld"><label for="rmPlatform">平台<i>*</i></label><select id="rmPlatform"></select></div>
+          <div class="fld"><label for="rmShop">店铺</label><input type="text" id="rmShop" list="rmShopList" placeholder="选填"><datalist id="rmShopList"></datalist></div>
+          <div class="fld full"><label for="rmLinkId">链接 ID<i>*</i></label><input type="text" id="rmLinkId" placeholder="粘贴链接 ID，自动匹配历史记录与利润表"><div class="tip" id="rmLinkTip">从链接内进入会自动带入，必要时可在这里修改。</div></div>
+          <div class="fld full"><label for="rmTitleIn">商品标题</label><input type="text" id="rmTitleIn" placeholder="选填，便于搜索"></div>
+        </div>
+      </details>
+      <div class="fld"><label for="rmTime">调整时间<i>*</i></label><input type="datetime-local" id="rmTime"></div>
+      <div class="fld"><label for="rmPlan">计划类型</label><select id="rmPlan"></select></div>
+      <div class="fld full"><label for="rmItem">调整项</label><input type="text" id="rmItem" placeholder="如 日限额 / 投产目标 / 计划类型"><div class="rm-quick" data-rm-quick="item"></div></div>
+      <div class="fld"><label for="rmBefore">改动前</label><input type="text" id="rmBefore" placeholder="如 1.8"></div>
+      <div class="fld"><label for="rmAfter">改动后</label><input type="text" id="rmAfter" placeholder="如 2.2"></div>
+      <div class="fld full"><label for="rmReason">为什么改</label><textarea id="rmReason" rows="2" placeholder="当时的判断依据"></textarea><div class="rm-quick" data-rm-quick="reason"></div></div>
+      <div class="fld full"><label for="rmNext">后续计划 / 目标</label><textarea id="rmNext" rows="2" placeholder="打算怎么观察或继续调"></textarea><div class="rm-quick" data-rm-quick="next"></div></div>
+      <div class="fld"><label for="rmConcl">结论</label><select id="rmConcl"><option>待观察</option><option>有效</option><option>无效</option><option>持平</option></select></div>
+      <div class="fld"><label for="rmStat">目标状态</label><select id="rmStat"><option>进行中</option><option>已完成</option></select></div>
     </div>
-    <div class="mfoot"><span class="mhint" id="rmHint"></span><button class="btn" id="rmCancel">取消</button><button class="btn primary" id="rmSave">保存</button></div>
+    <div class="mfoot"><span class="mhint" id="rmHint" aria-live="polite"></span><button type="button" class="btn" id="rmCancel">取消</button><button type="button" class="btn primary" id="rmSave">保存记录</button></div>
   </div>
 </div>
 
@@ -3308,21 +3380,84 @@ function autoFillFromLink(linkId){
     title:(rec&&rec.title)||(pr&&pr["商品名称"])||""
   };
 }
+/* ---------- 记一笔：精简链接信息与自定义快捷项 ---------- */
+const RM_QUICK_FIELDS={item:{id:"rmItem",label:"调整项"},reason:{id:"rmReason",label:"为什么改"},next:{id:"rmNext",label:"后续计划"}};
+const RM_QUICK_DEFAULTS={item:["日限额","投产目标","计划类型"],reason:["利润率下降","推广费占比偏高","放量测试"],next:["观察3天后复盘","观察7天后复盘","维持当前设置继续观察"]};
+function rmCleanQuickValues(values){
+  return [...new Set((Array.isArray(values)?values:[]).filter(v=>typeof v==="string").map(v=>v.trim()).filter(v=>v&&v.length<=500))];
+}
+function rmReadQuickOptions(saved){
+  const out={};
+  for(const key of Object.keys(RM_QUICK_FIELDS)) out[key]=rmCleanQuickValues(saved&&Array.isArray(saved[key])?saved[key]:RM_QUICK_DEFAULTS[key]);
+  return out;
+}
+let rmQuickOptions=rmReadQuickOptions(prefs.recordQuickOptions);
+let rmQuickUI={};
+let rmReturnFocus=null;
+let rmAutoIdentity={title:"",shop:""};
+let rmIdentityTimer=null,rmMatchedLinkId="";
+function rmPersistQuickOptions(next){
+  const clean=rmReadQuickOptions(next);
+  try{ localStorage.setItem(PREF_KEY,JSON.stringify(Object.assign({},prefs,{recordQuickOptions:clean}))); }
+  catch(e){ return false; }
+  prefs.recordQuickOptions=clean;
+  rmQuickOptions=clean;
+  return true;
+}
+function rmMergeQuickOptions(saved){
+  if(!saved||typeof saved!=="object") return true;
+  const merged={};
+  for(const key of Object.keys(RM_QUICK_FIELDS)) merged[key]=rmCleanQuickValues(rmQuickOptions[key].concat(Array.isArray(saved[key])?saved[key]:[]));
+  return rmPersistQuickOptions(merged);
+}
+function rmQuickState(key){
+  return rmQuickUI[key]||(rmQuickUI[key]={managing:false,editor:false,editIndex:-1,draft:"",error:""});
+}
+function rmRenderQuick(key){
+  const cfg=RM_QUICK_FIELDS[key], root=el("recModal").querySelector(`[data-rm-quick="${key}"]`);
+  if(!cfg||!root) return;
+  const ui=rmQuickState(key), value=el(cfg.id).value.trim();
+  const selected=text=>key==="item"?value===text:value===text||value.split(/\r?\n/).some(line=>line.trim()===text);
+  const chips=rmQuickOptions[key].map((text,i)=>`<span class="rm-quick-chip${selected(text)?" is-used":""}"><button type="button" data-rmq-action="apply" data-rmq-index="${i}" title="${H(text)}">${H(text)}</button>${ui.managing?`<button type="button" data-rmq-action="edit" data-rmq-index="${i}" aria-label="编辑快捷项：${H(text)}">编辑</button><button type="button" data-rmq-action="remove" data-rmq-index="${i}" aria-label="删除快捷项：${H(text)}">删除</button>`:""}</span>`).join("");
+  root.innerHTML=`<div class="rm-quick-bar"><span class="rm-quick-help">${key==="item"?"点击快捷项填入":"点击快捷项追加，保留已输入内容"}</span><button type="button" class="rm-quick-link" data-rmq-action="add">＋ 添加</button><button type="button" class="rm-quick-link" data-rmq-action="manage" aria-pressed="${ui.managing}">${ui.managing?"完成管理":"管理"}</button></div>`
+    +`<div class="rm-quick-list">${chips||'<span class="rm-quick-empty">暂无快捷项，可添加常用内容</span>'}</div>`
+    +(ui.editor?`<div class="rm-quick-editor"><label for="rmQuickDraft-${key}">${ui.editIndex<0?"添加":"编辑"}${H(cfg.label)}快捷项</label><textarea id="rmQuickDraft-${key}" data-rmq-draft="${key}" rows="2" maxlength="500" placeholder="输入常用内容">${H(ui.draft)}</textarea><div class="rm-quick-editor-actions"><span class="rm-quick-note">仅保存为快捷项，不会提交调整记录</span><button type="button" class="btn" data-rmq-action="cancel">取消</button><button type="button" class="btn primary" data-rmq-action="save">保存快捷项</button></div></div>`:"")
+    +(ui.error?`<div class="rm-quick-error" role="status">${H(ui.error)}</div>`:"");
+}
+function rmUpdateIdentitySummary(){
+  const id=el("rmLinkId").value.trim(), title=el("rmTitleIn").value.trim();
+  el("rmIdentityTitle").textContent=title||(id?"链接 "+id:"选择要记录的链接");
+  el("rmIdentityTitle").title=title||id;
+  el("rmIdentityMeta").textContent=id?[el("rmPlatform").value,el("rmShop").value.trim(),"ID "+id].filter(Boolean).join(" · "):"填写链接 ID 后可自动匹配商品与店铺";
+}
+function rmFocusIdentity(id){
+  el("rmIdentity").open=true;
+  const target=el(id); target.focus(); target.scrollIntoView({block:"nearest"});
+}
 function openForm(pre){
   pre=pre||{};
+  rmReturnFocus=document.activeElement;
   editingId=pre.id||null;
+  rmQuickUI={};
+  clearTimeout(rmIdentityTimer);
+  delete el("rmPlatform").dataset.touched;
   el("rmHead").textContent=editingId?"编辑调整记录":"新增调整记录";
-  const linkId=pre.linkId||"";
+  const linkId=String(pre.linkId||"").trim();
+  rmMatchedLinkId=linkId;
   const auto=(linkId&&(!pre.shop||!pre.platform||!pre.title))?autoFillFromLink(linkId):{};
   const sp=splitShop(pre.shop||auto.shop||"");
-  el("rmPlatform").innerHTML=Object.keys(PLANS).map(p=>`<option>${p}</option>`).join("");
-  el("rmPlatform").value=pre.platform||auto.platform||sp.platform||"PDD";
+  const platform=pre.platform||auto.platform||sp.platform||"PDD";
+  el("rmPlatform").innerHTML=[...new Set(Object.keys(PLANS).concat(platform))].map(p=>`<option value="${H(p)}">${H(p)}</option>`).join("");
+  el("rmPlatform").value=platform;
   fillPlans(pre.plan);
+  if(pre.plan&&![...el("rmPlan").options].some(o=>o.value===pre.plan)) el("rmPlan").add(new Option(pre.plan,pre.plan));
+  if(pre.plan) el("rmPlan").value=pre.plan;
   fillShopList();
   el("rmTime").value=String(pre.time||nowLocal()).slice(0,16);
   el("rmLinkId").value=linkId;
   el("rmTitleIn").value=pre.title||auto.title||"";
-  el("rmShop").value=sp.shop||pre.shop||"";
+  el("rmShop").value=sp.shop||pre.shop||auto.shop||"";
+  rmAutoIdentity={title:el("rmTitleIn").value,shop:el("rmShop").value};
   el("rmItem").value=pre.item||"";
   el("rmBefore").value=pre.before||"";
   el("rmAfter").value=pre.after||"";
@@ -3330,26 +3465,109 @@ function openForm(pre){
   el("rmNext").value=pre.next||"";
   el("rmConcl").value=pre.concl||"待观察";
   el("rmStat").value=pre.gstat||"进行中";
+  el("rmIdentity").open=!linkId;
+  rmUpdateIdentitySummary();
+  Object.keys(RM_QUICK_FIELDS).forEach(rmRenderQuick);
   el("recModal").classList.add("show");
+  el("recModal").querySelector(".mbody").scrollTop=0;
   hint("");
-  setTimeout(()=>{ if(!el("rmLinkId").value) el("rmLinkId").focus(); },50);
+  requestAnimationFrame(()=>{ if(el("recModal").classList.contains("show")) el(linkId?"rmItem":"rmLinkId").focus({preventScroll:true}); });
 }
-function closeForm(){ el("recModal").classList.remove("show"); editingId=null; }
+function closeForm(){
+  el("recModal").classList.remove("show"); editingId=null;
+  clearTimeout(rmTipTimer);
+  clearTimeout(rmIdentityTimer);
+  if(rmReturnFocus&&rmReturnFocus.isConnected) rmReturnFocus.focus({preventScroll:true});
+}
 
-el("rmPlatform").addEventListener("change",()=>{ el("rmPlatform").dataset.touched="1"; fillPlans(); fillShopList(); });
-el("rmLinkId").addEventListener("change",()=>{
-  const id=el("rmLinkId").value.trim(); if(!id) return;
-  const rs=recsOf(id);
-  const a=autoFillFromLink(id);
-  if(!el("rmTitleIn").value&&a.title) el("rmTitleIn").value=a.title;
-  if(!el("rmShop").value&&a.shop) el("rmShop").value=a.shop;
+el("rmPlatform").addEventListener("change",()=>{ el("rmPlatform").dataset.touched="1"; fillPlans(); fillShopList(); rmUpdateIdentitySummary(); });
+function rmMatchIdentity(){
+  clearTimeout(rmIdentityTimer);
+  const id=el("rmLinkId").value.trim();
+  if(id===rmMatchedLinkId) return;
+  rmMatchedLinkId=id;
+  if(!id){ rmUpdateIdentitySummary(); return; }
+  const rs=recsOf(id), a=autoFillFromLink(id);
+  if(!el("rmTitleIn").value||el("rmTitleIn").value===rmAutoIdentity.title) el("rmTitleIn").value=a.title||"";
+  if(!el("rmShop").value||el("rmShop").value===rmAutoIdentity.shop) el("rmShop").value=a.shop||"";
+  rmAutoIdentity={title:a.title||"",shop:a.shop||""};
   if(a.platform&&!el("rmPlatform").dataset.touched){
+    if(![...el("rmPlatform").options].some(o=>o.value===a.platform)) el("rmPlatform").add(new Option(a.platform,a.platform));
     el("rmPlatform").value=a.platform; fillPlans(); fillShopList();
   }
+  rmUpdateIdentitySummary();
   if(rs.length) hint(`已匹配 ${rs.length} 条历史记录，最近一条：${String(rs[0].time||"").slice(0,10)}`);
-  else if(a.title||a.shop) hint(`新链接：已从利润表带入${[a.platform,a.shop].filter(Boolean).join("-")||"标题与店铺"}`);
-  else hint("利润表和历史记录里都没有这个链接ID，请确认是否正确",true);
+  else if(a.title||a.shop) hint(`已从利润表带入${[a.platform,a.shop].filter(Boolean).join("-")||"标题与店铺"}`);
+  else hint("利润表和历史记录里都没有这个链接 ID，请确认是否正确",true);
+}
+el("rmLinkId").addEventListener("change",rmMatchIdentity);
+el("rmLinkId").addEventListener("input",()=>{
+  clearTimeout(rmIdentityTimer);
+  rmIdentityTimer=setTimeout(()=>{ if(el("recModal").classList.contains("show")) rmMatchIdentity(); },350);
 });
+for(const id of ["rmLinkId","rmShop","rmTitleIn"]) el(id).addEventListener("input",rmUpdateIdentitySummary);
+for(const key of Object.keys(RM_QUICK_FIELDS)) el(RM_QUICK_FIELDS[key].id).addEventListener("input",()=>rmRenderQuick(key));
+
+el("recModal").addEventListener("input",e=>{
+  if(e.target.matches("[data-rmq-draft]")) rmQuickState(e.target.dataset.rmqDraft).draft=e.target.value;
+});
+el("recModal").addEventListener("click",e=>{
+  const button=e.target.closest("[data-rmq-action]"); if(!button) return;
+  const root=button.closest("[data-rm-quick]"), key=root&&root.dataset.rmQuick, cfg=RM_QUICK_FIELDS[key]; if(!cfg) return;
+  const ui=rmQuickState(key), action=button.dataset.rmqAction, index=Number(button.dataset.rmqIndex), target=el(cfg.id);
+  ui.error="";
+  if(action==="apply"){
+    const text=rmQuickOptions[key][index]; if(text==null) return;
+    if(key==="item") target.value=text;
+    else if(!("\n"+target.value.trim().replace(/\r\n/g,"\n")+"\n").includes("\n"+text.replace(/\r\n/g,"\n")+"\n")) target.value=target.value?target.value.replace(/\s+$/,"")+"\n"+text:text;
+    target.dispatchEvent(new Event("input",{bubbles:true}));
+    target.focus({preventScroll:true}); target.setSelectionRange(target.value.length,target.value.length);
+    return;
+  }
+  if(action==="manage") ui.managing=!ui.managing;
+  if(action==="add"||action==="edit"){
+    ui.editor=true; ui.editIndex=action==="edit"?index:-1;
+    ui.draft=action==="edit"?rmQuickOptions[key][index]:target.value.trim();
+  }
+  if(action==="cancel"){ ui.editor=false; ui.draft=""; ui.editIndex=-1; }
+  if(action==="save"){
+    const text=ui.draft.trim();
+    if(!text) ui.error="请先填写快捷项内容。";
+    else if(text.length>500) ui.error="快捷项请控制在 500 个字符以内。";
+    else if(rmQuickOptions[key].some((value,i)=>value===text&&i!==ui.editIndex)) ui.error="这个快捷项已经存在，无需重复添加。";
+    else{
+      const values=rmQuickOptions[key].slice();
+      if(ui.editIndex>=0) values[ui.editIndex]=text; else values.push(text);
+      if(!rmPersistQuickOptions(Object.assign({},rmQuickOptions,{[key]:values}))) ui.error="未能保存到本机，请检查浏览器存储空间后重试。";
+      else{ ui.editor=false; ui.draft=""; ui.editIndex=-1; }
+    }
+  }
+  if(action==="remove"){
+    const values=rmQuickOptions[key].filter((_,i)=>i!==index);
+    if(!rmPersistQuickOptions(Object.assign({},rmQuickOptions,{[key]:values}))) ui.error="未能保存删除结果，请稍后重试。";
+    else{ ui.editor=false; ui.draft=""; ui.editIndex=-1; }
+  }
+  rmRenderQuick(key);
+  if(ui.editor&&(action==="add"||action==="edit"||action==="save")){
+    const input=el("rmQuickDraft-"+key); input.focus({preventScroll:true});
+  }
+});
+el("recModal").addEventListener("keydown",e=>{
+  if(e.key==="Escape"){
+    e.preventDefault(); e.stopPropagation();
+    const root=e.target.closest("[data-rm-quick]");
+    if(root&&rmQuickState(root.dataset.rmQuick).editor){ const ui=rmQuickState(root.dataset.rmQuick); ui.editor=false; ui.error=""; rmRenderQuick(root.dataset.rmQuick); el(RM_QUICK_FIELDS[root.dataset.rmQuick].id).focus(); }
+    else closeForm();
+    return;
+  }
+  if(e.key==="Tab"){
+    const focusable=[...el("recModal").querySelectorAll("button,input,select,textarea,summary")].filter(node=>!node.disabled&&node.getClientRects().length);
+    const first=focusable[0],last=focusable[focusable.length-1];
+    if(e.shiftKey&&document.activeElement===first){ e.preventDefault(); last.focus(); }
+    else if(!e.shiftKey&&document.activeElement===last){ e.preventDefault(); first.focus(); }
+  }
+});
+
 el("rmSave").addEventListener("click",()=>{
   const wasEdit=!!editingId;
   const shopRaw=el("rmShop").value.trim();
@@ -3365,8 +3583,8 @@ el("rmSave").addEventListener("click",()=>{
     concl:el("rmConcl").value, gstat:el("rmStat").value
   };
   if(!data.time) return hint("请填写调整时间",true);
-  if(!data.platform) return hint("请选择平台",true);
-  if(!data.linkId) return hint("请填写链接ID——它是记录的唯一主体",true);
+  if(!data.platform){ rmFocusIdentity("rmPlatform"); return hint("请选择平台",true); }
+  if(!data.linkId){ rmFocusIdentity("rmLinkId"); return hint("请填写链接 ID——它是记录的唯一主体",true); }
   if(editingId){
     const i=recList.findIndex(r=>String(r.id)===String(editingId));
     if(i>-1) recList[i]=Object.assign({},recList[i],data);
@@ -3418,7 +3636,7 @@ document.addEventListener("keydown",e=>{
 
 /* ---------- 备份 ---------- */
 el("lgExport").addEventListener("click",()=>{
-  const data={app:"投放利润看板",version:3,exportedAt:new Date().toISOString(),shops:shops,records:recList,linkImgs:linkImgs};
+  const data={app:"投放利润看板",version:3,exportedAt:new Date().toISOString(),shops:shops,records:recList,linkImgs:linkImgs,recordQuickOptions:rmQuickOptions};
   const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
   const a=document.createElement("a");
   a.href=URL.createObjectURL(blob);
@@ -3438,6 +3656,7 @@ el("lgFile").addEventListener("change",e=>{
     try{ j=JSON.parse(rd.result); }catch(err){}
     arr=Array.isArray(j)?j:(j&&Array.isArray(j.records)?j.records:null);
     if(!arr) return toast("文件格式不对，需要本工具导出的 JSON");
+    const quickSaved=rmMergeQuickOptions(j&&j.recordQuickOptions);
     if(j&&j.linkImgs&&typeof j.linkImgs==="object"){
       let n=0;
       for(const k of Object.keys(j.linkImgs)){
@@ -3464,7 +3683,7 @@ el("lgFile").addEventListener("change",e=>{
       has.add(id); recList.push(Object.assign({},r,{id})); add++;
     }
     saveRecs(); _ridx=null; refreshAll();
-    toast(add?`已导入 ${add} 条记录`+(Object.keys(linkImgs).length?`（含 ${Object.keys(linkImgs).length} 个商品图）`:""):"没有新增记录（全部已存在）");
+    toast((add?`已导入 ${add} 条记录`+(Object.keys(linkImgs).length?`（含 ${Object.keys(linkImgs).length} 个商品图）`:""):"没有新增记录（全部已存在）")+(j&&j.recordQuickOptions?(quickSaved?" · 快捷项已合并":" · 快捷项保存失败，请重试"):""));
   };
   rd.readAsText(f,"utf-8");
 });
