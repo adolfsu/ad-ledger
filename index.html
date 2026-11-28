@@ -316,6 +316,14 @@ tbody tr.has-adj>td:not(.reccell){background:rgba(210,153,34,.06)}
 tbody tr.has-adj>td:first-child{box-shadow:inset 2px 0 0 var(--amber)}
 .lc-stats{display:flex;gap:0;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--border);overflow-x:auto;flex-shrink:0}
 .lc-body{flex:1;overflow:auto;padding:14px 16px;display:flex;flex-direction:column;gap:12px}
+.lg-bulkbar{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin:0 22px 10px;padding:9px 13px;border:1px solid var(--border);border-radius:13px;background:color-mix(in srgb,var(--panel) 88%,transparent);color:var(--text2);font-size:11.5px;flex-shrink:0}
+.lg-bulkbar .lg-bulk-help{color:var(--text3);margin-right:auto}
+.lg-bulkbar .lg-bulk-count{font-variant-numeric:tabular-nums;white-space:nowrap}
+.lg-bulkbar .btn{padding:5px 9px;font-size:11.5px}
+.lg-bulkbar .btn:disabled{opacity:.45;cursor:default}
+.lg-bulkbar .btn:disabled:hover{border-color:var(--border2);color:var(--text2)}
+#lgDeleteSelected{color:var(--red);border-color:color-mix(in srgb,var(--red) 45%,var(--border2))}
+#lgDeleteSelected:hover:not(:disabled){border-color:var(--red);color:var(--red)}
 .mini{background:var(--panel2);border:1px solid var(--border2);color:var(--text);border-radius:5px;padding:4px 7px;font-size:12px;outline:none;cursor:pointer}
 .wchips{display:flex;gap:4px;background:var(--panel2);border:1px solid var(--border2);border-radius:6px;padding:2px}
 .wchip{padding:3px 10px;font-size:11.5px;border-radius:5px;cursor:pointer;color:var(--text2);user-select:none;white-space:nowrap}
@@ -358,7 +366,11 @@ tbody tr.has-adj>td:first-child{box-shadow:inset 2px 0 0 var(--amber)}
 .pw{display:grid;grid-template-columns:repeat(auto-fill,minmax(176px,1fr));gap:10px;align-content:start}
 .pw-card{background:var(--panel);border:1px solid var(--border);border-radius:10px;overflow:hidden;display:flex;flex-direction:column;cursor:pointer;transition:border-color .12s,transform .12s,box-shadow .12s}
 .pw-card:hover{border-color:var(--accent);transform:translateY(-1px);box-shadow:0 4px 14px var(--shadow-c)}
+.pw-card.is-selected{border-color:var(--accent);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 22%,transparent)}
 .pw-media{position:relative;aspect-ratio:1/1;background:var(--thumb-bg);display:flex;align-items:center;justify-content:center;overflow:hidden}
+.pw-select{position:absolute;top:7px;right:7px;z-index:2;display:flex;align-items:center;gap:5px;padding:5px 8px;border:1px solid rgba(255,255,255,.28);border-radius:8px;background:rgba(10,14,20,.72);color:#fff;font-size:11px;line-height:1;cursor:pointer;user-select:none;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+.pw-select input{width:14px;height:14px;margin:0;accent-color:var(--accent);cursor:pointer}
+.pw-select:hover{background:rgba(10,14,20,.88)}
 .pw-hint{position:absolute;inset:auto 0 0 0;padding:26px 8px 6px;background:linear-gradient(to top,rgba(0,0,0,.7),rgba(0,0,0,0));color:#fff;font-size:11px;text-align:center;opacity:0;transition:opacity .12s;pointer-events:none}
 .pw-card:hover .pw-hint{opacity:1}
 .pw-media img.pw-thumb{width:100%;height:100%;object-fit:contain;display:block;cursor:zoom-in}
@@ -529,6 +541,7 @@ tfoot td{background:var(--foot-bg);border-top:1px solid var(--border2)}
   .stats{padding:12px 14px 10px}
   #tableWrap,.sumtable{margin-left:14px;margin-right:14px}
   .sumctrl{margin-left:14px;margin-right:14px}
+  .lg-bulkbar{margin-left:14px;margin-right:14px}
   .pager{padding-left:14px;padding-right:14px}
 }
 @media(max-width:600px){
@@ -542,6 +555,7 @@ tfoot td{background:var(--foot-bg);border-top:1px solid var(--border2)}
   .stat .val{font-size:15px}
   #tableWrap,.sumtable{margin-left:8px;margin-right:8px;border-radius:14px}
   .sumctrl{margin-left:8px;margin-right:8px;border-radius:14px}
+  .lg-bulkbar{margin-left:8px;margin-right:8px}
   .drawer,.drawer.open{top:6px;right:6px;height:calc(100vh - 12px);max-width:calc(100vw - 6px);border-radius:18px 0 0 18px}
   .rmodal{padding:10px}
   .rmodal .mbox{max-width:100%;max-height:96vh;border-radius:17px}
@@ -724,6 +738,8 @@ tfoot td{background:var(--foot-bg);border-top:1px solid var(--border2)}
   #recModal{padding:8px}
   #recModal .mbox{max-width:100%;max-height:calc(100dvh - 16px)}
   #recModal .mhead,#recModal .mfoot{padding:11px 13px}
+  #recModal .mfoot{flex-wrap:wrap;justify-content:flex-end;row-gap:8px}
+  #recModal .mfoot .mhint{flex:1 0 100%;order:-1}
   #recModal .mbody{padding:12px 13px;gap:11px}
   #recModal .rm-identity>summary{gap:9px;padding:10px}
   #recModal .rm-identity-copy strong{max-width:52vw}
@@ -736,18 +752,110 @@ tfoot td{background:var(--foot-bg);border-top:1px solid var(--border2)}
 }
 </style>
 
+<style id="imp-style">
+/* 列对应弹窗（导入表格时） */
+.imp-bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:10px 12px;background:var(--panel2);border:1px solid var(--border);border-radius:9px;margin-bottom:12px;font-size:12px;color:var(--text2)}
+.imp-file{font-weight:600;color:var(--text);max-width:400px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.imp-hd{display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.imp-hd input{width:56px;background:var(--panel);border:1px solid var(--border2);border-radius:6px;padding:3px 6px;color:var(--text);font-size:12px;text-align:center;font-family:inherit;outline:none}
+.imp-bar .btn{margin-left:auto}
+.imp-map{width:100%;border-collapse:collapse;font-size:12px;table-layout:fixed}
+.imp-map th{text-align:left;font-weight:500;color:var(--text3);padding:6px 8px;border-bottom:1px solid var(--border);font-size:11px}
+.imp-map td{padding:5px 8px;border-bottom:1px solid var(--border);vertical-align:middle}
+.imp-map tr.miss td{background:color-mix(in srgb,var(--amber) 8%,transparent)}
+.imp-map td.k{width:42%}
+.imp-map td.s{width:36%}
+.imp-alias{display:block;color:var(--text);font-weight:500}
+.imp-raw{display:block;color:var(--text3);font-size:10px;margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.imp-map select{width:100%;background:var(--panel2);border:1px solid var(--border2);border-radius:6px;padding:5px 7px;color:var(--text);font-size:12px;font-family:inherit;outline:none}
+.imp-map select:focus{border-color:var(--accent)}
+.imp-map td.v{color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.imp-map td.v i{color:var(--amber);font-style:normal}
+.imp-rem{display:flex;align-items:center;gap:8px;margin:13px 2px 4px;font-size:12px;color:var(--text2);cursor:pointer;user-select:none}
+<style id="table-src-style">
+/* 已保存表格的来源徽章：只在本地有保存数据时出现 */
+.srcchip{display:none;align-items:center;gap:6px;max-width:272px;padding:3px 5px 3px 9px;border:1px solid var(--border2);border-radius:99px;background:var(--panel2);font-size:11px;color:var(--text3);white-space:nowrap;line-height:1.45}
+.srcchip.on{display:inline-flex}
+.srcchip b{font-weight:500;color:var(--text2);overflow:hidden;text-overflow:ellipsis;max-width:146px;margin-left:5px}
+.srcchip span{color:var(--text3);margin-left:6px}
+.srcchip button{border:0;background:none;color:var(--text3);cursor:pointer;font-size:11px;line-height:1;padding:2px 5px;border-radius:99px;font-family:inherit}
+.srcchip button:hover{background:var(--hover);color:var(--red)}
+@media (max-width:700px){ .srcchip{max-width:calc(100vw - 40px)} }
+/* 一键抓取面板 */
+#jstModal .mbox{width:880px}
+#jstModal .mbody{grid-template-columns:1fr;gap:12px}
+.jstrow{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.jstrow .lbl{font-size:12px;color:var(--text3);white-space:nowrap}
+.jstrow select,.jstrow input[type="text"]{background:var(--panel2);border:1px solid var(--border2);color:var(--text);border-radius:8px;padding:6px 9px;font-size:12.5px;outline:none}
+.jstrow select{max-width:250px}
+.jstrow input[type="text"]{width:200px}
+.jstrow .btn{padding:4px 9px;font-size:12px}
+.jstsec{border:1px solid var(--border);border-radius:12px;padding:10px 12px;background:var(--panel2)}
+.jstsh{display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap}
+.jstsh b{font-size:12.5px;color:var(--text)}
+.jstsh .hint{font-size:11.5px;color:var(--text3)}
+.jstsh input[type="text"]{flex:1;min-width:130px;background:var(--panel);border:1px solid var(--border2);border-radius:8px;padding:5px 9px;font-size:12px;outline:none;color:var(--text)}
+.jstsh .btn{padding:3px 9px;font-size:11.5px}
+.jstshops{max-height:246px;overflow-y:auto}
+.jstg{margin-bottom:7px}
+.jstgh{font-size:11.5px;color:var(--text3);font-weight:600;padding:2px 0 3px}
+.jstgitems{display:grid;grid-template-columns:repeat(auto-fill,minmax(192px,1fr));gap:1px 10px}
+.jsti{display:flex;align-items:center;gap:6px;font-size:12px;padding:3px 5px;border-radius:6px;cursor:pointer;color:var(--text2);overflow:hidden;white-space:nowrap}
+.jsti:hover{background:var(--hover)}
+.jsti input{accent-color:var(--accent2);flex:none}
+.jstchips{display:flex;gap:6px;flex-wrap:wrap}
+.jstchips .btn{padding:3px 11px;font-size:12px;border-radius:99px}
+.jstchips .btn.on{border-color:var(--accent2);background:var(--accent2);color:#fff}
+.jstdate{display:flex;align-items:center;gap:8px;margin-top:9px;font-size:12px;color:var(--text2)}
+.jstdate input{background:var(--panel);border:1px solid var(--border2);color:var(--text);border-radius:8px;padding:5px 8px;font-size:12px;outline:none}
+.jsthint{font-size:12px;color:var(--text3);padding:6px 2px;line-height:1.6}
+.mhint.ok{color:var(--green)}
+/* ---------- 调整计划 ---------- */
+#planModal .mbox{width:840px;max-width:96vw}
+#planModal .mbody{display:flex;flex-direction:column;gap:9px;padding:14px 18px}
+#planModal .mfoot .mhint{flex:1}
+.plcard{display:flex;gap:12px;align-items:flex-start;border:1px solid var(--border);border-radius:12px;background:var(--panel2);padding:11px 13px;transition:border-color .12s}
+.plcard:hover{border-color:var(--border2)}
+.plmain{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+.pltitle{font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.plmeta{font-size:11px;color:var(--text3);display:flex;gap:9px;flex-wrap:wrap}
+.plmeta .plid{font-variant-numeric:tabular-nums}
+.plchg{font-size:12px;color:var(--text2);display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.plchg b{font-weight:600;color:var(--text)}
+.plchg .arw{color:var(--text3);font-size:11px}
+.plchg .pltype{font-size:10.5px;color:var(--text3);border:1px solid var(--border);border-radius:6px;padding:0 5px;line-height:16px}
+.plnote{font-size:11.5px;color:var(--text2);line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.plnote em{font-style:normal;color:var(--text3);margin-right:5px}
+.placts{display:flex;flex-direction:column;gap:6px;flex-shrink:0;width:86px}
+.placts .btn{padding:4px 8px;font-size:11.5px;white-space:nowrap;width:100%;text-align:center}
+.placts .btn.danger:hover{border-color:var(--red);color:var(--red)}
+.plempty{border:1px dashed var(--border2);border-radius:12px;padding:26px 18px;text-align:center;color:var(--text3);font-size:12px;line-height:1.8}
+.plempty b{display:block;color:var(--text2);font-size:13px;margin-bottom:4px}
+#btnPlans .vcount{background:var(--soft);color:var(--soft-tx)}
+/* 记录与计划互通：来源标记（虚线边框，和普通徽章区分开） */
+.planbadge{font-size:10.5px;border-radius:4px;padding:1px 7px;font-weight:600;color:var(--accent);border:1px dashed var(--accent);background:transparent;white-space:nowrap;cursor:default}
+.plmeta .plfrom{color:var(--accent);border:1px dashed var(--accent);border-radius:6px;padding:0 5px;line-height:16px}
+.plmeta .cpy{font-size:10px;line-height:14px;padding:0 3px;margin-left:4px;opacity:.7}
+.plmeta .cpy:hover{opacity:1}
+/* 「加入清单」是另一条保存路径，不是取消：用主色描边和「取消」区分开 */
+#rmToList{color:var(--accent);border-color:var(--accent)}
+#rmToList:hover{background:var(--soft);color:var(--soft-tx)}
+</style>
 </head>
 <body>
 
 <div class="topbar" id="topbar">
-  <h1><span class="logo">📊</span>投放利润看板<span class="ver" id="verBadge" title="2026-11-21 苹果风格界面、大弹窗、单链接字段浏览与趋势、链接状态筛选、记一笔快捷项">v1.4.0</span></h1>
+  <h1><span class="logo">📊</span>投放利润看板<span class="ver" id="verBadge" title="2026-11-28 v3.4.1：调整计划卡片的链接 ID 支持一键复制">v3.4.1</span></h1>
+  <span class="srcchip" id="srcChip"></span>
   <div class="viewtabs" id="viewTabs">
     <span class="vtab on" data-view="detail">📋 明细</span>
     <span class="vtab" data-view="sum">📊 汇总</span>
     <span class="vtab" data-view="ledger">🗂 付费调整记录<span id="ledgerCnt" class="vcount">0</span></span>
   </div>
-  <button class="btn primary" id="btnImport">📂 导入 CSV</button>
+  <button class="btn primary" id="btnImport" title="支持 Excel(.xlsx) 与 CSV，拖进页面也可以">📂 导入表格</button>
   <button class="btn" id="btnNewRec" title="新增一条投放调整记录">✏️ 记一笔</button>
+  <button class="btn" id="btnPlans" title="先列调整计划，改完再点「已调整」按确认时间入账">🗓 调整计划<span class="vcount" id="planCnt" style="display:none">0</span></button>
+  <button class="btn" id="btnJst" style="display:none" title="按预设条件从聚水潭直接取数并导入">⚡ 一键抓取</button>
   <a class="btn" href="https://ss.erp321.com/profit-report/goods-profit" target="_blank" rel="noopener" title="打开利润报表页面导出数据">⬇ 获取数据表</a>
   <button class="btn ghost" id="themeBtn" title="切换深色/浅色主题">🌙 深色</button>
   <div class="detailtools donly" id="detailTools">
@@ -771,7 +879,7 @@ tfoot td{background:var(--foot-bg);border-top:1px solid var(--border2)}
 <div class="tablewrap" id="tableWrap">
   <div class="empty" id="emptyState">
     <div class="big">📉</div>
-    <div>暂无数据：点击右上角「导入 CSV」导入文件，或点「获取数据表」前往利润报表页面导出；也可直接将 CSV 拖入本页面</div>
+    <div>暂无数据：点击右上角「导入表格」选择 Excel / CSV；装了插件的话，点「⚡ 一键抓取」按预设直接从聚水潭取数，或点「获取数据表」去报表页手动导出（导出后会自动提示读取）；也可以直接把文件拖进本页面</div>
   </div>
   <table id="mainTable" class="hidden"><thead id="thead"></thead><tbody id="tbody"></tbody><tfoot id="tfoot"></tfoot></table>
 </div>
@@ -836,6 +944,13 @@ tfoot td{background:var(--foot-bg);border-top:1px solid var(--border2)}
     <button class="btn ghost" id="lgExport" title="导出全部调整记录为 JSON 留底">导出备份</button>
     <button class="btn ghost" id="lgImport" title="从 JSON 备份恢复（按 id 去重合并）">导入备份</button>
     <input type="file" id="lgFile" accept=".json,application/json" class="hidden">
+  </div>
+  <div class="lg-bulkbar" id="lgBulkBar">
+    <span class="lg-bulk-help">勾选商品卡片，可删除该商品的全部历史调整记录</span>
+    <span class="lg-bulk-count" id="lgBulkCount">未选择商品</span>
+    <button type="button" class="btn ghost" id="lgSelectVisible" title="选择当前筛选结果中的所有商品">全选当前结果</button>
+    <button type="button" class="btn ghost" id="lgClearSelected" disabled>清除选择</button>
+    <button type="button" class="btn" id="lgDeleteSelected" disabled>删除所选商品的全部记录</button>
   </div>
   <div class="lc-stats" id="lgStats"></div>
   <div class="lc-body" id="lgList"></div>
@@ -907,6 +1022,17 @@ tfoot td{background:var(--foot-bg);border-top:1px solid var(--border2)}
 
 <div class="lightbox" id="lightbox" onclick="this.style.display='none'"><img id="lightboxImg" src="" alt=""></div>
 
+<div class="rmodal" id="planModal" role="dialog" aria-modal="true" aria-labelledby="planHead">
+  <div class="mbox">
+    <div class="mhead"><b id="planHead">调整计划</b><button type="button" class="mclose" id="planClose" aria-label="关闭调整计划">✕</button></div>
+    <div class="mbody" id="planList"></div>
+    <div class="mfoot"><span class="mhint" id="planHint">计划只是待办，不占调整记录；点「已调整」才按确认时间入账</span>
+      <button type="button" class="btn" id="planExport" title="把清单里的计划导出成 Excel，表头按平台、店铺、链接、改动前后等排列">⬇ 导出 Excel</button>
+      <button type="button" class="btn" id="planNew">＋ 新建计划</button>
+      <button type="button" class="btn primary" id="planDone">关闭</button></div>
+  </div>
+</div>
+
 <div class="rmodal" id="recModal" role="dialog" aria-modal="true" aria-labelledby="rmHead">
   <div class="mbox">
     <div class="mhead"><b id="rmHead">新增调整记录</b><button type="button" class="mclose" id="rmClose" aria-label="关闭调整记录">✕</button></div>
@@ -923,8 +1049,8 @@ tfoot td{background:var(--foot-bg);border-top:1px solid var(--border2)}
           <div class="fld full"><label for="rmTitleIn">商品标题</label><input type="text" id="rmTitleIn" placeholder="选填，便于搜索"></div>
         </div>
       </details>
-      <div class="fld"><label for="rmTime">调整时间<i>*</i></label><input type="datetime-local" id="rmTime"></div>
-      <div class="fld"><label for="rmPlan">计划类型</label><select id="rmPlan"></select></div>
+      <div class="fld" id="rmTimeFld"><label for="rmTime">调整时间<i>*</i></label><input type="datetime-local" id="rmTime"></div>
+      <div class="fld" id="rmPlanFld"><label for="rmPlan">计划类型</label><select id="rmPlan"></select></div>
       <div class="fld full"><label for="rmItem">调整项</label><input type="text" id="rmItem" placeholder="如 日限额 / 投产目标 / 计划类型"><div class="rm-quick" data-rm-quick="item"></div></div>
       <div class="fld"><label for="rmBefore">改动前</label><input type="text" id="rmBefore" placeholder="如 1.8"></div>
       <div class="fld"><label for="rmAfter">改动后</label><input type="text" id="rmAfter" placeholder="如 2.2"></div>
@@ -933,13 +1059,13 @@ tfoot td{background:var(--foot-bg);border-top:1px solid var(--border2)}
       <div class="fld"><label for="rmConcl">结论</label><select id="rmConcl"><option>待观察</option><option>有效</option><option>无效</option><option>持平</option></select></div>
       <div class="fld"><label for="rmStat">目标状态</label><select id="rmStat"><option>进行中</option><option>已完成</option></select></div>
     </div>
-    <div class="mfoot"><span class="mhint" id="rmHint" aria-live="polite"></span><button type="button" class="btn" id="rmCancel">取消</button><button type="button" class="btn primary" id="rmSave">保存记录</button></div>
+    <div class="mfoot"><span class="mhint" id="rmHint" aria-live="polite"></span><button type="button" class="btn" id="rmCancel">取消</button><button type="button" class="btn" id="rmToList" title="先存进调整计划清单，不记录时间；真正改完在清单里点「✅ 已调整」，按那时的确认时间入账">＋ 加入清单</button><button type="button" class="btn primary" id="rmSave">保存记录</button></div>
   </div>
 </div>
 
-<div class="dropmask" id="dropMask">松开鼠标即可导入 CSV 文件</div>
+<div class="dropmask" id="dropMask">松开鼠标即可导入 Excel / CSV 文件</div>
 <div class="toast" id="toast"></div>
-<input type="file" id="fileInput" accept=".csv,text/csv" class="hidden">
+<input type="file" id="fileInput" accept=".csv,.xlsx,.xlsm,text/csv" class="hidden">
 
 <script type="application/json" id="seedJson">{"app": "ads-change-log", "version": 3, "exportedAt": "", "shops": {}, "records": [], "linkImgs": {}}</script>
 <script>
@@ -994,6 +1120,176 @@ let fixedLayout = false;     // 是否已切换为固定列宽布局
 
 const $ = id => document.getElementById(id);
 
+/* ================= 表格数据本地保存（覆盖式） =================
+ * 导入的利润表存在本机，关掉页面再打开会自动恢复；
+ * 再次导入新表格时整条覆盖，不累加、不冲突。 */
+const TABLE_KEY = "adlog_table_v1";        /* v2.2.0 的旧键：整份 JSON，只用于迁移/兜底 */
+const TABLE_META_KEY = "adlog_tmeta_v1";   /* 小索引：文件名、行数、时间、体积（很小，同步可读） */
+const IDB_NAME = "adlog_store", IDB_STORE = "kv", IDB_TABLE = "table_v1";
+let _noPersist = false;      // 从缓存恢复时不回写，省一次 IO
+let _restoring = false;      // 恢复中：提示语换成「已恢复」
+
+/* ---------- IndexedDB：存表格正文 ----------
+ * localStorage 只有 5MB（还按 UTF-16 双字节算，中文表格实际只能装两兆多字符）。
+ * IndexedDB 的配额是磁盘可用空间的一部分，浏览器实测报到 10GB 量级，
+ * 几十万行的利润表也放得下。单文件版与扩展版都走这里，容量一致。 */
+let _idbP = null;
+function idbOpen(){
+  if(_idbP) return _idbP;
+  _idbP = new Promise((res, rej) => {
+    let req;
+    try{ req = indexedDB.open(IDB_NAME, 1); }catch(e){ return rej(e); }
+    req.onupgradeneeded = () => {
+      const db = req.result;
+      if(!db.objectStoreNames.contains(IDB_STORE)) db.createObjectStore(IDB_STORE);
+    };
+    req.onsuccess = () => res(req.result);
+    req.onerror = () => rej(req.error || new Error("indexedDB 打不开"));
+    req.onblocked = () => rej(new Error("indexedDB 被其它页面占用"));
+  });
+  return _idbP;
+}
+function idbRun(mode, fn){
+  return idbOpen().then(db => new Promise((res, rej) => {
+    let tx, rq;
+    try{ tx = db.transaction(IDB_STORE, mode); rq = fn(tx.objectStore(IDB_STORE)); }
+    catch(e){ return rej(e); }
+    tx.oncomplete = () => res(rq && ("result" in rq) ? rq.result : true);
+    tx.onerror = () => rej(tx.error || new Error("indexedDB 读写失败"));
+    tx.onabort = () => rej(tx.error || new Error("indexedDB 中断（多半是空间不足）"));
+  }));
+}
+const idbGet = k => idbRun("readonly", st => st.get(k));
+/* 请求「持久化」权限：被授予后浏览器不会在磁盘紧张时自动清掉 IndexedDB。
+   不支持或被拒绝都无所谓，只是少一层保险。 */
+function idbPersist(){
+  try{
+    if(!navigator.storage || !navigator.storage.persist) return;
+    navigator.storage.persisted()
+      .then(p => p ? true : navigator.storage.persist())
+      .catch(() => {});
+  }catch(e){}
+}
+const idbPut = (k, v) => idbRun("readwrite", st => st.put(v, k));
+const idbDel = k => idbRun("readwrite", st => st.delete(k));
+
+const fmtSize = n => {
+  const v = Number(n) || 0;
+  if(v >= 1073741824) return (v / 1073741824).toFixed(1) + " GB";
+  if(v >= 1048576) return (v / 1048576).toFixed(1) + " MB";
+  if(v >= 1024) return Math.round(v / 1024) + " KB";
+  return v + " B";
+};
+
+function tableMetaGet(){
+  try{
+    const j = JSON.parse(localStorage.getItem(TABLE_META_KEY) || "null");
+    return (j && (j.rows || j.name)) ? j : null;
+  }catch(e){ return null; }
+}
+/* v2.2.0 存在 localStorage 里的全文：读到就搬进 IndexedDB，再把 localStorage 腾空 */
+function tableLegacyTake(){
+  try{
+    const j = JSON.parse(localStorage.getItem(TABLE_KEY) || "null");
+    return (j && typeof j.text === "string" && j.text) ? j : null;
+  }catch(e){ return null; }
+}
+function tableCacheLoad(){
+  const legacy = tableLegacyTake();
+  if(legacy){
+    tableCacheSet(legacy.text, legacy.name, legacy);   /* 迁移：写入 IDB + 生成索引 */
+    return Promise.resolve(legacy);
+  }
+  const meta = tableMetaGet();
+  if(!meta) return Promise.resolve(null);
+  return idbGet(IDB_TABLE).then(rec => (rec && typeof rec.text === "string" && rec.text) ? rec : null)
+    .catch(e => { console.warn("[table] IndexedDB 读取失败", e); return null; });
+}
+function tableCacheSet(text, name, meta){
+  if(_noPersist) return;
+  const body = String(text || "");
+  const rec = {
+    v: 2,
+    name: name || (meta && meta.name) || "表格",
+    at: (meta && meta.at) || Date.now(),
+    rows: ROWS.length || (meta && meta.rows) || 0,
+    cols: HEADERS.length || (meta && meta.cols) || 0,
+    size: body.length
+  };
+  /* 小索引同步写：徽章要立刻出现，启动时靠它判断「有没有东西要恢复」 */
+  try{ localStorage.setItem(TABLE_META_KEY, JSON.stringify(rec)); }catch(e){}
+  paintSrcChip();
+  const full = Object.assign({}, rec, { text: body });
+  idbPut(IDB_TABLE, full).then(() => {
+    /* 正文已在 IDB，旧的 localStorage 全文可以释放了 */
+    try{ localStorage.setItem(TABLE_KEY, ""); }catch(e){}
+    idbPersist();
+  }).catch(err => {
+    console.warn("[table] IndexedDB 写入失败，退回 localStorage", err);
+    try{
+      localStorage.setItem(TABLE_KEY, JSON.stringify(full));
+      toast("表格已保存到本机（兼容模式，上限约 5 MB）");
+    }catch(e2){
+      const mb = Math.max(0.1, body.length * 2 / 1048576).toFixed(1);
+      toast(`表格较大（约 ${mb} MB），本机存储放不下，本次未保存；下次打开需重新导入`);
+    }
+  });
+}
+function tableCacheClear(){
+  /* 构建禁止 removeItem：写空串即视为「没有保存」 */
+  try{ localStorage.setItem(TABLE_META_KEY, ""); localStorage.setItem(TABLE_KEY, ""); }catch(e){}
+  idbDel(IDB_TABLE).catch(() => {});
+  paintSrcChip();
+}
+function fmtSavedAt(t){
+  const d = new Date(Number(t) || 0);
+  if(isNaN(d.getTime())) return "";
+  const p = n => String(n).padStart(2, "0");
+  const now = new Date();
+  const same = d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth() && d.getDate() === now.getDate();
+  const hm = p(d.getHours()) + ":" + p(d.getMinutes());
+  return same ? ("今天 " + hm) : (p(d.getMonth() + 1) + "-" + p(d.getDate()) + " " + hm);
+}
+function paintSrcChip(){
+  const box = $("srcChip"); if(!box) return;
+  const c = tableMetaGet();
+  if(!c){ box.classList.remove("on"); box.innerHTML = ""; return; }
+  box.classList.add("on");
+  const sizeTx = c.size ? fmtSize(c.size) : "";
+  box.title = "表格数据已保存在本机：" + (c.name || "") + "（" + (c.rows || 0) + " 行" + (sizeTx ? " · " + sizeTx : "") + "）\n" +
+    "关掉页面再打开会自动恢复；导入新表格会直接覆盖它。\n" +
+    "存储用 IndexedDB，容量跟着磁盘剩余走，几十万行也放得下。";
+  box.innerHTML = '📄 <b>' + esc(c.name) + '</b><span>' + (c.rows || 0) + ' 行 · ' + fmtSavedAt(c.at) + '</span>' +
+    '<button id="srcClear" title="清除已保存的表格">✕</button>';
+  /* 有 estimate 就补一句可用空间，让人心里有数 */
+  try{
+    if(navigator.storage && navigator.storage.estimate){
+      navigator.storage.estimate().then(est => {
+        if(!est || !box.classList.contains("on")) return;
+        const free = Math.max(0, (est.quota || 0) - (est.usage || 0));
+        box.title = box.title.split("\n可用空间")[0] + "\n可用空间约 " + fmtSize(free) + "（页面存储配额）";
+      }).catch(() => {});
+    }
+  }catch(e){}
+}
+
+/* 清除按钮（动态生成，用委托） */
+document.addEventListener("click", e => {
+  if(!e.target.closest("#srcClear")) return;
+  e.preventDefault();
+  if(!confirm("清除已保存的表格数据？\n清除后需要重新导入表格才能看到数据。")) return;
+  tableCacheClear();
+  ROWS = []; HEADERS = []; visibleCols = [...DEFAULT_COLS];
+  filtered = []; colFilters = {}; searchText = ""; page = 1;
+  const si = $("searchInput"); if(si) si.value = "";
+  const tb = $("tbody"), tf = $("tfoot"), mt = $("mainTable");
+  if(tb) tb.innerHTML = "";
+  if(tf) tf.innerHTML = "";
+  if(mt) mt.classList.add("hidden");
+  try{ switchView("detail"); buildColPop(); render(); }catch(err){ console.error(err); }
+  toast("已清除保存的表格数据");
+});
+
 /* ================= CSV 解析 ================= */
 function parseCSV(text){
   if(text.charCodeAt(0)===0xFEFF) text = text.slice(1);
@@ -1038,8 +1334,909 @@ function loadCSVText(text, name){
   if(window.syncLinkImages) window.syncLinkImages();
   buildColPop(); render();
   if(viewMode==="sum") renderDateSummary();
-  toast(`已加载「${name||"内嵌数据"}」：${ROWS.length} 行 × ${HEADERS.length} 列` + (missing.length?`（缺少列：${missing.join("、")}）`:""));
+  toast(_restoring
+    ? `已恢复上次导入的「${name}」：${ROWS.length} 行`
+    : `已加载「${name||"内嵌数据"}」：${ROWS.length} 行 × ${HEADERS.length} 列` + (missing.length?`（缺少列：${missing.join("、")}）`:""));
+  tableCacheSet(text, name);
 }
+
+/* ================= 表格导入：CSV / XLSX ================= */
+/* 目标字段：利润表所需的列（图片列不参与导入，链接图另有来源） */
+const IMP_TARGETS = DEFAULT_COLS.filter(c => c !== "图片");
+
+/* 归一化列名：去空格、去标点、转小写，便于判等 */
+function impNorm(s){
+  return String(s == null ? "" : s).toLowerCase()
+    .replace(/[\s\u3000]/g, "")
+    .replace(/[（）()【】\[\]「」《》〈〉:：;,，.。、\-_/\\|%％"'“”‘’*×+]/g, "");
+}
+/* 拆词：按标点切段，做关键词命中判断 */
+function impTokens(s){
+  return String(s == null ? "" : s)
+    .split(/[\s\u3000（）()【】\[\]:：;,，、\-_/\\|%％]+/)
+    .map(impNorm).filter(Boolean);
+}
+
+/* ---------- 列自动匹配：先精确，再按关键词重合度打分，贪心分配 ---------- */
+function impGuessMap(headers){
+  const cols = headers.map((h, i) => ({ i, h: String(h == null ? "" : h), n: impNorm(h) }));
+  const pairs = [];
+  IMP_TARGETS.forEach((f, fi) => {
+    const nf = impNorm(f);
+    const tf = impTokens(f);
+    const needPct = /占比/.test(f);
+    const needRet = /扣退/.test(f);
+    const needCost = /成本/.test(f);
+    cols.forEach(c => {
+      let sc = 0;
+      if (c.n === nf) sc = 100;
+      else if (c.n && nf && (c.n.indexOf(nf) >= 0 || nf.indexOf(c.n) >= 0)) sc = 88;
+      else {
+        let hit = 0;
+        tf.forEach(t => { if (t && c.n.indexOf(t) >= 0) hit++; });
+        if (hit) sc = Math.round(66 * hit / tf.length);
+      }
+      if (!sc) return;
+      /* 限定词必须对上，否则「经营利润 / 净利润率」「销售金额 / 销售成本」会串 */
+      const hasPct = /占比|率/.test(c.h);
+      if (needPct && !hasPct) return;
+      if (!needPct && hasPct && /利润|毛利|推广/.test(f)) sc -= 30;
+      if (needRet && c.n.indexOf("扣退") < 0) return;
+      if (needCost && c.n.indexOf("成本") < 0) return;
+      if (!needCost && /成本/.test(c.h) && /金额/.test(f)) return;
+      if (sc >= 34) pairs.push({ fi, ci: c.i, sc });
+    });
+  });
+  pairs.sort((a, b) => b.sc - a.sc || a.fi - b.fi);
+  const map = {}, usedC = new Set(), usedF = new Set();
+  pairs.forEach(p => {
+    if (usedF.has(p.fi) || usedC.has(p.ci)) return;
+    map[IMP_TARGETS[p.fi]] = p.ci;
+    usedF.add(p.fi); usedC.add(p.ci);
+  });
+  return map;
+}
+
+/* ---------- 表头行识别：前 30 行里找「字段名最多」的一行 ---------- */
+const IMP_KEYS = /日期|店铺|商品|销售|利润|推广|编码|成交|花费|投产/;
+function impFindHeader(rows){
+  let bi = -1, bs = -1;
+  for (let i = 0; i < Math.min(rows.length, 30); i++){
+    const r = rows[i] || [];
+    let filled = 0, key = 0;
+    for (let j = 0; j < r.length; j++){
+      const s = String(r[j] == null ? "" : r[j]).trim();
+      if (!s) continue;
+      filled++;
+      if (IMP_KEYS.test(s)) key++;
+    }
+    const sc = filled + key * 4;
+    if (filled >= 3 && key >= 2 && sc > bs){ bs = sc; bi = i; }
+  }
+  if (bi >= 0) return bi;
+  let mi = 0, mv = -1;
+  for (let i = 0; i < Math.min(rows.length, 10); i++){
+    const n = (rows[i] || []).filter(v => String(v == null ? "" : v).trim()).length;
+    if (n > mv){ mv = n; mi = i; }
+  }
+  return mi;
+}
+
+/* ---------- 最小 ZIP 读取：只解析中央目录，按需解压 ---------- */
+async function impInflate(u8){
+  if (typeof DecompressionStream === "undefined"){
+    throw new Error("当前浏览器不支持解压（需要 Chrome 103+），请改用 CSV 导入");
+  }
+  const st = new Blob([u8]).stream().pipeThrough(new DecompressionStream("deflate-raw"));
+  return new Uint8Array(await new Response(st).arrayBuffer());
+}
+async function impZipOpen(buf){
+  const u8 = new Uint8Array(buf);
+  const dv = new DataView(u8.buffer, u8.byteOffset, u8.byteLength);
+  let eocd = -1;
+  for (let i = u8.length - 22; i >= Math.max(0, u8.length - 65558); i--){
+    if (u8[i] === 0x50 && u8[i+1] === 0x4b && u8[i+2] === 0x05 && u8[i+3] === 0x06){ eocd = i; break; }
+  }
+  if (eocd < 0) throw new Error("不是有效的 xlsx（ZIP 结构缺失）；如果是旧版 .xls，请另存为 xlsx 或 csv");
+  const total = dv.getUint16(eocd + 10, true);
+  let off = dv.getUint32(eocd + 16, true);
+  const idx = new Map();
+  for (let k = 0; k < total; k++){
+    if (off + 46 > u8.length || dv.getUint32(off, true) !== 0x02014b50) break;
+    const method = dv.getUint16(off + 10, true);
+    const csize = dv.getUint32(off + 20, true);
+    const nlen = dv.getUint16(off + 28, true);
+    const elen = dv.getUint16(off + 30, true);
+    const clen = dv.getUint16(off + 32, true);
+    const lho = dv.getUint32(off + 42, true);
+    const name = new TextDecoder("utf-8").decode(u8.subarray(off + 46, off + 46 + nlen));
+    if (name && lho + 30 <= u8.length) idx.set(name, { method, csize, lho });
+    off += 46 + nlen + elen + clen;
+  }
+  async function read(name){
+    const e = idx.get(name);
+    if (!e) return null;
+    const lnlen = dv.getUint16(e.lho + 26, true);
+    const lelen = dv.getUint16(e.lho + 28, true);
+    const start = e.lho + 30 + lnlen + lelen;
+    const raw = u8.subarray(start, start + e.csize);
+    if (e.method === 0) return raw;
+    if (e.method === 8) return await impInflate(raw);
+    throw new Error("不支持的压缩方式：" + e.method);
+  }
+  return { names: Array.from(idx.keys()), read };
+}
+
+/* ---------- xlsx 取值工具 ---------- */
+function impUnesc(s){
+  return String(s == null ? "" : s)
+    .replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"')
+    .replace(/&apos;/g, "'").replace(/&#(\d+);/g, (m, d) => String.fromCharCode(+d))
+    .replace(/&#x([0-9a-f]+);/gi, (m, h) => String.fromCharCode(parseInt(h, 16)))
+    .replace(/&amp;/g, "&");
+}
+function impColIndex(ref){
+  let n = 0;
+  for (let i = 0; i < ref.length; i++) n = n * 26 + (ref.charCodeAt(i) - 64);
+  return n - 1;
+}
+const IMP_STD_DATE = { 14:1, 15:1, 16:1, 17:1, 18:1, 19:1, 20:1, 21:1, 22:1, 45:1, 46:1, 47:1 };
+function impIsDateFmt(id, customs){
+  if (IMP_STD_DATE[Number(id)]) return true;
+  const c = customs[id];
+  if (!c) return false;
+  const s = String(c).replace(/\[[^\]]*\]/g, "").replace(/"[^"]*"/g, "").replace(/\\/g, "");
+  return /[ymd]/i.test(s) && !/^[#0.,%\s]+$/.test(s);
+}
+function impIsPctFmt(id, customs){
+  if (Number(id) === 9 || Number(id) === 10) return true;
+  const c = customs[id];
+  if (!c) return false;
+  const s = String(c).replace(/\[[^\]]*\]/g, "").replace(/"[^"]*"/g, "").replace(/\\/g, "");
+  return s.indexOf("%") >= 0;
+}
+function impSerialDate(n, d1904){
+  let days = Math.floor(n);
+  const frac = n - days;
+  const base = d1904 ? Date.UTC(1904, 0, 1) : Date.UTC(1899, 11, 30);
+  const d = new Date(base + days * 86400000);
+  if (isNaN(d.getTime()) || d.getUTCFullYear() < 1900) return String(n);
+  const p = x => (x < 10 ? "0" : "") + x;
+  const date = d.getUTCFullYear() + "-" + p(d.getUTCMonth() + 1) + "-" + p(d.getUTCDate());
+  if (frac > 0.0006){
+    const mins = Math.round(frac * 1440);
+    return date + " " + p(Math.floor(mins / 60) % 24) + ":" + p(mins % 60);
+  }
+  return date;
+}
+
+/* ---------- 读取 xlsx：返回 [{name, rows}] ---------- */
+async function impReadXlsx(buf){
+  const zip = await impZipOpen(buf);
+  const td = new TextDecoder("utf-8");
+  const txt = async n => { const b = await zip.read(n); return b ? td.decode(b) : ""; };
+
+  const wbXml = await txt("xl/workbook.xml");
+  if (!wbXml) throw new Error("这个文件里没有 Excel 工作簿结构，可能不是 xlsx");
+  const d1904 = /date1904\s*=\s*"(1|true)"/i.test(wbXml);
+
+  /* 共享字符串 */
+  const shared = [];
+  const ssXml = await txt("xl/sharedStrings.xml");
+  if (ssXml){
+    const re = /<si\b[^>]*>([\s\S]*?)<\/si>/g;
+    let m;
+    while ((m = re.exec(ssXml))){
+      let s = "", tre = /<t\b[^>]*>([\s\S]*?)<\/t>/g, tm;
+      while ((tm = tre.exec(m[1]))) s += tm[1];
+      shared.push(impUnesc(s));
+    }
+  }
+
+  /* 样式 → 哪些单元格格式是日期 */
+  const dateXf = new Set();
+  const pctXf = new Set();
+  const stXml = await txt("xl/styles.xml");
+  if (stXml){
+    const customs = {};
+    let m;
+    const fre = /<numFmt\b[^>]*numFmtId="(\d+)"[^>]*formatCode="([^"]*)"/g;
+    while ((m = fre.exec(stXml))) customs[m[1]] = impUnesc(m[2]);
+    const block = (stXml.match(/<cellXfs\b[^>]*>([\s\S]*?)<\/cellXfs>/) || [])[1] || "";
+    const xre = /<xf\b[^>]*numFmtId="(\d+)"/g;
+    let i = 0;
+    while ((m = xre.exec(block))){
+      if (impIsDateFmt(m[1], customs)) dateXf.add(i);
+      else if (impIsPctFmt(m[1], customs)) pctXf.add(i);
+      i++;
+    }
+  }
+
+  /* 工作表清单 */
+  const rels = {};
+  const relXml = await txt("xl/_rels/workbook.xml.rels");
+  if (relXml){
+    /* 属性顺序各家不同（openpyxl 就是 Type → Target → Id），所以逐个属性抓 */
+    const re = /<Relationship\b([^>]*?)\/?>/g;
+    let m;
+    while ((m = re.exec(relXml))){
+      const id = (m[1].match(/\bId="([^"]+)"/) || [])[1];
+      const tg = (m[1].match(/\bTarget="([^"]+)"/) || [])[1];
+      if (id && tg) rels[id] = tg;
+    }
+  }
+  const sheets = [];
+  let m2;
+  const sre = /<sheet\b([^>]*?)\/?>/g;
+  while ((m2 = sre.exec(wbXml))){
+    const a = m2[1];
+    const nm = (a.match(/\bname="([^"]*)"/) || [])[1];
+    const rid = (a.match(/\br:id="([^"]+)"/) || [])[1];
+    if (nm === undefined) continue;
+    let t = rid ? (rels[rid] || "") : "";
+    t = t.replace(/^\/?xl\//i, "").replace(/^\//, "");
+    sheets.push({ name: impUnesc(nm), path: t ? "xl/" + t : "" });
+  }
+  if (!sheets.length){
+    zip.names.filter(n => /^xl\/worksheets\/[^/]+\.xml$/i.test(n)).sort()
+      .forEach((p, i) => sheets.push({ name: "Sheet" + (i + 1), path: p }));
+  }
+
+  function cellValue(attrs, inner){
+    const t = (attrs.match(/\bt="([^"]+)"/) || [])[1] || "";
+    const si = Number((attrs.match(/\bs="(\d+)"/) || [])[1] || 0);
+    if (t === "inlineStr"){
+      let s = "", re = /<t\b[^>]*>([\s\S]*?)<\/t>/g, mm;
+      while ((mm = re.exec(inner))) s += mm[1];
+      return impUnesc(s);
+    }
+    const vm = inner.match(/<v\b[^>]*>([\s\S]*?)<\/v>/);
+    const raw = vm ? impUnesc(vm[1]) : "";
+    if (t === "s"){ const i = Number(raw); return shared[i] === undefined ? "" : shared[i]; }
+    if (t === "b") return raw === "1" ? "TRUE" : "FALSE";
+    if (t === "e" || t === "str") return raw;
+    if (raw === "") return "";
+    const num = Number(raw);
+    if (!isNaN(num)){
+      if (dateXf.has(si)) return impSerialDate(num, d1904);
+      /* Excel 里百分比存的是小数（0.4231 + 0.00%），看板按「42.31%」字符串处理，这里转好 */
+      if (pctXf.has(si)) return String(Math.round(num * 10000) / 100) + "%";
+    }
+    return raw;
+  }
+
+  async function sheetRows(path){
+    const xml = await txt(path);
+    if (!xml) return [];
+    const rows = [];
+    const rowRe = /<row\b([^>]*)>([\s\S]*?)<\/row>/g;
+    let rm;
+    while ((rm = rowRe.exec(xml))){
+      const rIdx = Number((rm[1].match(/\br="(\d+)"/) || [])[1] || 0) || rows.length + 1;
+      const cells = [];
+      const cellRe = /<c\b([^>]*?)(\/>|>([\s\S]*?)<\/c>)/g;
+      let cm;
+      while ((cm = cellRe.exec(rm[2]))){
+        const attrs = cm[1];
+        const ref = (attrs.match(/\br="([A-Z]+)\d+"/i) || [])[1];
+        const ci = ref ? impColIndex(ref.toUpperCase()) : cells.length;
+        cells[ci] = cellValue(attrs, cm[3] || "");
+      }
+      const arr = [];
+      for (let i = 0; i < cells.length; i++) arr[i] = cells[i] === undefined ? "" : cells[i];
+      rows[rIdx - 1] = arr;
+    }
+    for (let i = 0; i < rows.length; i++) if (!rows[i]) rows[i] = [];
+    return rows;
+  }
+
+  const out = [];
+  for (const s of sheets){
+    if (!s.path) continue;
+    const rows = await sheetRows(s.path);
+    if (rows.length) out.push({ name: s.name, rows });
+  }
+  return out;
+}
+
+/* ---------- 列对应关系记忆 ---------- */
+function impMapsLoad(){
+  try { return JSON.parse(localStorage.getItem("adlog_colmap_v1") || "{}") || {}; } catch (e){ return {}; }
+}
+function impMapsSave(o){
+  try { localStorage.setItem("adlog_colmap_v1", JSON.stringify(o)); } catch (e){}
+}
+function impSig(head){
+  return impNorm(head.join("|")).slice(0, 160) || "default";
+}
+
+/* ---------- 列对应弹窗 ---------- */
+let impState = null;
+
+function impEnsureModal(){
+  if ($("impModal")) return;
+  const d = document.createElement("div");
+  d.className = "rmodal";
+  d.id = "impModal";
+  d.setAttribute("role", "dialog");
+  d.setAttribute("aria-modal", "true");
+  d.innerHTML =
+    '<div class="mbox" style="width:780px">' +
+      '<div class="mhead"><b>导入表格 · 确认列对应</b><button type="button" class="mclose" id="impClose" aria-label="关闭">✕</button></div>' +
+      '<div class="mbody" id="impBody" style="grid-template-columns:1fr;gap:0"></div>' +
+      '<div class="mfoot"><span class="mhint" id="impHint"></span>' +
+        '<button type="button" class="btn" id="impCancel">取消</button>' +
+        '<button type="button" class="btn primary" id="impOk">导入</button></div>' +
+    '</div>';
+  document.body.appendChild(d);
+
+  const close = () => { d.classList.remove("show"); impState = null; };
+  $("impClose").onclick = close;
+  $("impCancel").onclick = close;
+  d.addEventListener("click", e => { if (e.target === d) close(); });
+  $("impOk").onclick = impCommit;
+  $("impBody").addEventListener("change", e => {
+    const t = e.target;
+    if (t.id === "impHdr"){ impRereadHeader(Number(t.value)); return; }
+    if (t.id === "impAll"){ impAutoMapAll(); return; }
+    const s = t.closest("select[data-impf]");
+    if (!s || !impState) return;
+    const f = s.dataset.impf;
+    if (s.value === "") delete impState.map[f]; else impState.map[f] = Number(s.value);
+    impPaintSample(s.closest("tr"), f);
+    impPaintHint();
+  });
+}
+
+function impPaintSample(tr, f){
+  if (!tr || !impState) return;
+  const cell = tr.querySelector("td.v");
+  if (!cell) return;
+  const ci = impState.map[f];
+  tr.classList.toggle("miss", !(ci >= 0));
+  if (!(ci >= 0)){ cell.innerHTML = "<i>未匹配</i>"; return; }
+  const row = impState.body.find(r => String((r || [])[ci] == null ? "" : (r || [])[ci]).trim() !== "") || [];
+  const v = String(row[ci] == null ? "" : row[ci]);
+  cell.textContent = v.slice(0, 30);
+}
+
+function impPaintHint(){
+  if (!impState) return;
+  const st = impState;
+  const got = IMP_TARGETS.filter(f => st.map[f] >= 0).length;
+  const miss = IMP_TARGETS.filter(f => !(st.map[f] >= 0));
+  let s = "表头第 " + (st.hIdx + 1) + " 行 · 数据 " + st.body.length + " 行 · 已对应 " + got + "/" + IMP_TARGETS.length + " 列";
+  const need = ["日期", "店铺款式编码"].filter(f => !(st.map[f] >= 0));
+  if (need.length) s += " · 缺少必填：" + need.join("、");
+  else if (miss.length) s += " · 未对应：" + miss.map(dispName).join("、");
+  const el = $("impHint");
+  el.textContent = s;
+  el.classList.toggle("warn", need.length > 0);
+}
+
+function impRender(){
+  const st = impState;
+  if (!st) return;
+  const head = st.head;
+  const saved = st.remembered;
+  const rowsHtml = IMP_TARGETS.map(f => {
+    const ci = st.map[f];
+    const one = ['<option value="">— 不导入 —</option>']
+      .concat(head.map((h, i) => '<option value="' + i + '"' + (ci === i ? " selected" : "") + ">" + esc(h) + "</option>"))
+      .join("");
+    return '<tr class="' + (ci >= 0 ? "" : "miss") + '">' +
+      '<td class="k"><span class="imp-alias">' + esc(dispName(f)) + '</span><span class="imp-raw">' + esc(f) + "</span></td>" +
+      '<td class="s"><select data-impf="' + esc(f) + '">' + one + "</select></td>" +
+      '<td class="v"><i>未匹配</i></td></tr>';
+  }).join("");
+
+  $("impBody").innerHTML =
+    '<div class="imp-bar">' +
+      '<span class="imp-file" title="' + esc(st.fileName) + '">📄 ' + esc(st.fileName) + (st.sheetName ? " · " + esc(st.sheetName) : "") + "</span>" +
+      '<span class="imp-hd">表头在第 <input type="number" id="impHdr" min="1" max="' + st.rows.length + '" value="' + (st.hIdx + 1) + '"> 行</span>' +
+      '<button type="button" class="btn ghost" id="impAll">重新自动匹配</button>' +
+    "</div>" +
+    '<table class="imp-map"><thead><tr><th>看板字段</th><th>文件里的列</th><th>示例值</th></tr></thead><tbody>' + rowsHtml + "</tbody></table>" +
+    '<label class="imp-rem"><input type="checkbox" id="impKeep" checked> 记住这个文件格式的列对应关系（下次自动套用）</label>';
+
+  IMP_TARGETS.forEach(f => {
+    const sel = $("impBody").querySelector('select[data-impf="' + f.replace(/"/g, '\\"') + '"]');
+    if (sel) impPaintSample(sel.closest("tr"), f);
+  });
+  impPaintHint();
+}
+
+function impAutoMapAll(){
+  if (!impState) return;
+  impState.map = impGuessMap(impState.head);
+  impRender();
+}
+
+function impRereadHeader(v){
+  if (!impState) return;
+  const n = Math.max(1, Math.min(impState.rows.length, Number(v) || 1));
+  impState.hIdx = n - 1;
+  const t = impTableOf(impState.rows, impState.hIdx);
+  impState.head = t.head;
+  impState.body = t.body;
+  const saved = impMapsLoad()[impSig(t.head)];
+  impState.remembered = !!(saved && saved.map);
+  impState.map = (saved && saved.map) || impGuessMap(t.head);
+  Object.keys(impState.map).forEach(k => { const i = impState.map[k]; if (!(i >= 0 && i < t.head.length)) delete impState.map[k]; });
+  impRender();
+}
+
+function impTableOf(rows, hIdx){
+  const raw = (rows[hIdx] || []).map(v => String(v == null ? "" : v).trim());
+  const head = raw.map((v, i) => v || ("列" + (i + 1)));
+  const body = rows.slice(hIdx + 1).filter(r => (r || []).some(v => String(v == null ? "" : v).trim() !== ""));
+  return { head, body };
+}
+
+function impOpenTable(fileName, rows, sheetName, auto){
+  impEnsureModal();
+  const hIdx = impFindHeader(rows);
+  const t = impTableOf(rows, hIdx);
+  const saved = impMapsLoad()[impSig(t.head)];
+  let map = (saved && saved.map) ? Object.assign({}, saved.map) : impGuessMap(t.head);
+  Object.keys(map).forEach(k => { const i = map[k]; if (!(i >= 0 && i < t.head.length)) delete map[k]; });
+  impState = { fileName: fileName || "表格", sheetName: sheetName || "", rows, hIdx, head: t.head, body: t.body, map, remembered: !!(saved && saved.map) };
+  /* 一键抓取：这套表头已经对过一次，就直接按记忆的列对应导入，不再弹窗 */
+  if (auto && impState.remembered){ impCommit(); return; }
+  impRender();
+  $("impModal").classList.add("show");
+}
+
+const impCsvCell = v => {
+  const s = String(v == null ? "" : v);
+  return /[",\r\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+};
+
+function impCommit(){
+  const st = impState;
+  if (!st) return;
+  const picks = IMP_TARGETS.filter(f => st.map[f] >= 0).map(f => ({ f, c: st.map[f] }));
+  const need = ["日期", "店铺款式编码"].filter(f => !picks.some(p => p.f === f));
+  if (need.length){ toast("还需要对应「" + need.join("」「") + "」才能导入"); return; }
+  const lines = [picks.map(p => p.f)];
+  st.body.forEach(r => lines.push(picks.map(p => impCsvCell((r || [])[p.c]))));
+  const csv = lines.map(l => l.join(",")).join("\r\n");
+  if ($("impKeep") && $("impKeep").checked){
+    const all = impMapsLoad();
+    all[impSig(st.head)] = { map: st.map, at: Date.now(), name: st.fileName };
+    impMapsSave(all);
+  }
+  const name = st.fileName;
+  $("impModal").classList.remove("show");
+  impState = null;
+  loadCSVText(csv, name);
+}
+
+/* ---------- 一入口：按扩展名分流 ---------- */
+async function impHandleBuffer(name, buf, opts){
+  const nm = String(name || "");
+  if (/\.(xlsx|xlsm)$/i.test(nm)){
+    const sheets = await impReadXlsx(buf);
+    if (!sheets.length) throw new Error("文件里没有可读的工作表");
+    const s = sheets.find(x => x.rows.length > 1) || sheets[0];
+    impOpenTable(nm, s.rows, s.name, !!(opts && opts.auto));
+    return;
+  }
+  /* 文本类（csv/txt）：UTF-8 优先，出现乱码再按 GBK 解一次 */
+  let text = new TextDecoder("utf-8").decode(buf);
+  if (text.charCodeAt(0) === 0xFEFF) text = text.slice(1);
+  if (/\uFFFD/.test(text.slice(0, 3000))){
+    try { text = new TextDecoder("gbk").decode(buf); } catch (e){}
+  }
+  const raw = parseCSV(text);
+  if (raw.length < 2) throw new Error("文件为空或格式不正确");
+  const head = (raw[0] || []).map(h => String(h == null ? "" : h).trim());
+  if (IMP_TARGETS.every(f => head.includes(f))){ loadCSVText(text, nm || "CSV"); return; }
+  impOpenTable(nm, raw, "");
+}
+
+async function impHandleFile(file){
+  if (!file) return;
+  try {
+    const buf = await file.arrayBuffer();
+    await impHandleBuffer(file.name, buf);
+  } catch (e){
+    console.error(e);
+    toast("读取失败：" + ((e && e.message) || e));
+  }
+}
+
+window.__imp = { file: impHandleFile, buffer: impHandleBuffer, open: impOpenTable };
+
+/* ================= 一键抓取（聚水潭利润报表 · 接口直连） ================= */
+/* 分工：
+ *   界面与条件拼装在这里；开页面、发请求、取文件交给后台（bg.js）+ 页面脚本（jst.js）。
+ *   条件结构照抄聚水潭页面的真实请求（2026-11-23 取证），字段顺序也保持一致。
+ *   条件里存的是「语义 + 具体日期」，日期在点下按钮那一刻才换算，明天再点就是新的一天。
+ */
+const JST_KEY = "adlog_jst_v1";
+const JST_FILE_KEY = "adledger_jst_file_v1";
+const JST_DATES = [["last7","近7天"],["last14","近14天"],["last30","近30天"],["cm","本月"],["lm","上月"],["custom","自定义"]];
+let JSTUI = { shops: [], picked: new Set(), presetId: "", dateMode: "last7", from: "", to: "", busy: false, q: "" };
+
+function jstExt(){ try { return !!(window.chrome && chrome.runtime && chrome.runtime.id); } catch (e){ return false; } }
+function jstCfg(){
+  try {
+    const o = JSON.parse(localStorage.getItem(JST_KEY) || "{}") || {};
+    if (!Array.isArray(o.presets)) o.presets = [];
+    return o;
+  } catch (e){ return { presets: [] }; }
+}
+function jstCfgSave(o){ try { localStorage.setItem(JST_KEY, JSON.stringify(o)); } catch (e){} }
+function jstPad(n){ return (n < 10 ? "0" : "") + n; }
+function jstD(d){ return d.getFullYear() + "-" + jstPad(d.getMonth() + 1) + "-" + jstPad(d.getDate()); }
+
+/* 近 N 天按「今天往前推」算：8 号点近 7 天 = 1 号~7 号，和聚水潭的「7天」口径一致 */
+function jstRange(mode, from, to){
+  const now = new Date();
+  const t0 = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const day = n => { const d = new Date(t0); d.setDate(d.getDate() + n); return d; };
+  if (mode === "custom") return { a: from || jstD(day(-7)), b: to || jstD(day(-1)) };
+  let a, b;
+  if (mode === "last14"){ a = day(-14); b = day(-1); }
+  else if (mode === "last30"){ a = day(-30); b = day(-1); }
+  else if (mode === "cm"){ a = new Date(t0.getFullYear(), t0.getMonth(), 1); b = day(-1); }
+  else if (mode === "lm"){ a = new Date(t0.getFullYear(), t0.getMonth() - 1, 1); b = new Date(t0.getFullYear(), t0.getMonth(), 0); }
+  else { a = day(-7); b = day(-1); }
+  let A = jstD(a), B = jstD(b);
+  if (B < A) B = A;                       /* 月初第一天点「本月」时不留反向区间 */
+  return { a: A, b: B };
+}
+
+/* 报表条件：字段与取值都照搬页面请求，空筛选项也要留着（后端按固定结构解析） */
+function jstCond(p){
+  const r = jstRange(p.dateMode, p.from, p.to);
+  const s = new Date(r.a + "T00:00:00");
+  const e = new Date(r.b + "T23:59:59.999");
+  return {
+    seachType: 0,
+    combineDate: [s.toISOString(), e.toISOString()],
+    dateFld: "pay_date",
+    returnDateType: "cmf",
+    shop: p.shops.slice(),
+    act: [],
+    groupByType: "shop_i_id",
+    groupList: ["shop_id", "datevalue", "shop_i_id"],
+    effective: "nosplit",
+    isShowOnlineSkuName: true,
+    backGoodsType: 0,
+    splitCombine: true,
+    isShowOtherPromotion: true,
+    wmsCoidList: [],
+    buIdList: [],
+    drpCoidtos: [],
+    skuIn: { type: "anyonesku", values: [], select: "in" },
+    skuOut: { type: "anyonesku", values: [], select: "out" },
+    labelIn: { type: "anyonelabel", values: [], select: "in" },
+    labelout: { type: "anyonelabel", values: [], select: "out" },
+    creatorList: [],
+    cusIdList: [],
+    skuLabelIn: { type: "anyoneskulabel", values: [], select: "in" },
+    skuLabelOut: { type: "anyoneskulabel", values: [], select: "out" },
+    brands: [],
+    categorys: [],
+    vcNames: [],
+    goodsCostGroup: { skuCostAmountSearchType: { value: 2, label: "按固定值搜索商品成本" }, value: "", values: ["", ""] },
+    onlineSkuName: "",
+    beginDate: r.a,
+    endDate: r.b,
+    skuGroup: "shop_i_id",
+    orderType: [],
+    skuCostAmountSearchType: 2,
+    skuCostAmountList: [],
+    isUseCustomizeRate: false,
+    isOL: true,
+    indexPerferUnType: "pfskuprofit_performance_report",
+    isCrossBorder: false
+  };
+}
+
+function jstStatus(text, kind){
+  const el = $("jstHint");
+  if (!el) return;
+  el.textContent = text || "";
+  el.className = "mhint" + (kind === "err" ? " warn" : kind === "ok" ? " ok" : "");
+}
+function jstBusy(on){
+  JSTUI.busy = !!on;
+  const b = $("jstGo");
+  if (b){ b.disabled = !!on; b.textContent = on ? "正在抓取…" : "开始抓取并导入"; }
+}
+
+/* ---------- 界面 ---------- */
+function jstEnsureModal(){
+  if ($("jstModal")) return;
+  const d = document.createElement("div");
+  d.className = "rmodal";
+  d.id = "jstModal";
+  d.setAttribute("role", "dialog");
+  d.setAttribute("aria-modal", "true");
+  d.innerHTML =
+    '<div class="mbox">' +
+      '<div class="mhead"><b>⚡ 一键抓取 · 聚水潭利润报表</b><button type="button" class="mclose" id="jstClose" aria-label="关闭">✕</button></div>' +
+      '<div class="mbody">' +
+        '<div class="jstrow"><span class="lbl">预设</span><select id="jstPreset"></select>' +
+          '<button type="button" class="btn ghost" id="jstPSave" title="把当前店铺和时间存回选中的预设">保存</button>' +
+          '<button type="button" class="btn ghost" id="jstPAs">另存为…</button>' +
+          '<button type="button" class="btn ghost" id="jstPDel">删除</button>' +
+          '<span class="mhint" id="jstPHint"></span></div>' +
+        '<div class="jstrow hidden" id="jstNameRow"><span class="lbl">名称</span>' +
+          '<input type="text" id="jstName" maxlength="24" placeholder="例如：主力店铺 · 近7天">' +
+          '<button type="button" class="btn primary" id="jstNameOk">建立</button></div>' +
+        '<div class="jstsec">' +
+          '<div class="jstsh"><b>🏪 店铺</b><span class="hint" id="jstShopCnt"></span>' +
+            '<input type="text" id="jstShopQ" placeholder="搜索店铺 / 平台">' +
+            '<button type="button" class="btn ghost" id="jstShopAll">全选</button>' +
+            '<button type="button" class="btn ghost" id="jstShopNone">清空</button>' +
+            '<button type="button" class="btn ghost" id="jstShopRefresh">刷新</button></div>' +
+          '<div class="jstshops" id="jstShops"></div>' +
+        '</div>' +
+        '<div class="jstsec">' +
+          '<div class="jstsh"><b>📅 时间</b><span class="jstchips" id="jstDates"></span></div>' +
+          '<div class="jstdate" id="jstCustomRow"><span>自定义</span><input type="date" id="jstFrom"><span>~</span><input type="date" id="jstTo"></div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="mfoot"><span class="mhint" id="jstHint">只用你已登录的聚水潭账号取数，不上传任何信息</span>' +
+        '<button type="button" class="btn" id="jstCancel">取消</button>' +
+        '<button type="button" class="btn primary" id="jstGo">开始抓取并导入</button></div>' +
+    '</div>';
+  document.body.appendChild(d);
+
+  const close = () => { d.classList.remove("show"); };
+  $("jstClose").onclick = close;
+  $("jstCancel").onclick = close;
+  d.addEventListener("click", e => { if (e.target === d) close(); });
+  $("jstGo").onclick = jstGo;
+  $("jstShopRefresh").onclick = () => jstLoadShops(true);
+  $("jstShopAll").onclick = () => { jstShopsNow().forEach(s => JSTUI.picked.add(s.id)); jstPaintShops(); };
+  $("jstShopNone").onclick = () => { JSTUI.picked.clear(); jstPaintShops(); };
+  $("jstShopQ").oninput = e => { JSTUI.q = e.target.value || ""; jstPaintShops(); };
+  $("jstShops").addEventListener("change", e => {
+    const t = e.target;
+    if (!t || !t.dataset || !t.dataset.jstshop) return;
+    const id = Number(t.dataset.jstshop);
+    if (t.checked) JSTUI.picked.add(id); else JSTUI.picked.delete(id);
+    jstPaintShopCnt();
+  });
+  $("jstDates").addEventListener("click", e => {
+    const b = e.target.closest ? e.target.closest("[data-jstdate]") : null;
+    if (!b) return;
+    JSTUI.dateMode = b.dataset.jstdate;
+    const r = jstRange(JSTUI.dateMode, $("jstFrom").value, $("jstTo").value);
+    $("jstFrom").value = r.a;
+    $("jstTo").value = r.b;
+    jstPaintDates();
+  });
+  $("jstFrom").onchange = $("jstTo").onchange = () => { JSTUI.dateMode = "custom"; jstPaintDates(); };
+  $("jstPreset").onchange = e => jstApplyPreset(e.target.value);
+  $("jstPSave").onclick = () => jstSavePreset(false);
+  $("jstPAs").onclick = () => {
+    const row = $("jstNameRow");
+    row.classList.remove("hidden");
+    $("jstName").value = "预设 " + jstD(new Date());
+    $("jstName").focus();
+    $("jstName").select();
+  };
+  $("jstNameOk").onclick = () => jstSavePreset(true);
+  $("jstName").onkeydown = e => { if (e.key === "Enter") jstSavePreset(true); };
+  $("jstPDel").onclick = jstDelPreset;
+}
+
+function jstShopsNow(){
+  const q = (JSTUI.q || "").trim().toLowerCase();
+  if (!q) return JSTUI.shops;
+  return JSTUI.shops.filter(s => (s.name || "").toLowerCase().includes(q) || (s.site || "").toLowerCase().includes(q));
+}
+
+function jstPaintShopCnt(){
+  const el = $("jstShopCnt");
+  if (el) el.textContent = JSTUI.picked.size ? ("已选 " + JSTUI.picked.size + " 个") : "未选";
+}
+
+function jstPaintShops(){
+  const box = $("jstShops");
+  if (!box) return;
+  const list = jstShopsNow();
+  if (!JSTUI.shops.length){
+    box.innerHTML = '<div class="jsthint">还没有店铺清单。点「刷新」从聚水潭拉一次（需要浏览器里已登录聚水潭）。</div>';
+  } else if (!list.length){
+    box.innerHTML = '<div class="jsthint">没有匹配「' + esc(JSTUI.q) + '」的店铺。</div>';
+  } else {
+    const groups = {};
+    list.forEach(s => { const k = s.site || "其他"; (groups[k] = groups[k] || []).push(s); });
+    let html = "";
+    Object.keys(groups).forEach(g => {
+      const arr = groups[g];
+      html += '<div class="jstg"><div class="jstgh">' + esc(g) + '（' + arr.length + '）</div><div class="jstgitems">';
+      arr.forEach(s => {
+        html += '<label class="jsti" title="' + esc(s.name) + '"><input type="checkbox" data-jstshop="' + Number(s.id) + '"' +
+          (JSTUI.picked.has(Number(s.id)) ? " checked" : "") + '>' + esc(s.name) + '</label>';
+      });
+      html += '</div></div>';
+    });
+    box.innerHTML = html;
+  }
+  jstPaintShopCnt();
+}
+
+function jstPaintDates(){
+  const box = $("jstDates");
+  if (box){
+    box.innerHTML = JST_DATES.map(d =>
+      '<button type="button" class="btn ghost' + (JSTUI.dateMode === d[0] ? " on" : "") + '" data-jstdate="' + d[0] + '">' + d[1] + '</button>'
+    ).join("");
+  }
+  const r = jstRange(JSTUI.dateMode, JSTUI.from, JSTUI.to);
+  JSTUI.from = r.a; JSTUI.to = r.b;
+  if ($("jstFrom")) $("jstFrom").value = r.a;
+  if ($("jstTo")) $("jstTo").value = r.b;
+}
+
+function jstPaintPresets(){
+  const sel = $("jstPreset");
+  if (!sel) return;
+  const c = jstCfg();
+  sel.innerHTML = '<option value="">（临时条件，未保存）</option>' + c.presets.map(p =>
+    '<option value="' + esc(p.id) + '">' + esc(p.name) + '</option>'
+  ).join("");
+  sel.value = JSTUI.presetId || "";
+  const cur = c.presets.filter(p => p.id === JSTUI.presetId)[0];
+  const h = $("jstPHint");
+  if (h) h.textContent = cur ? ("店铺 " + (cur.shops || []).length + " 个 · 更新于 " + new Date(cur.at || Date.now()).toLocaleDateString("zh-CN")) : "选一个预设，或直接调好条件后「另存为」";
+}
+
+function jstApplyPreset(id){
+  const c = jstCfg();
+  const p = c.presets.filter(x => x.id === id)[0];
+  JSTUI.presetId = p ? p.id : "";
+  if (p){
+    JSTUI.picked = new Set((p.shops || []).map(Number).filter(Boolean));
+    JSTUI.dateMode = p.dateMode || "last7";
+    JSTUI.from = p.from || "";
+    JSTUI.to = p.to || "";
+  }
+  c.last = JSTUI.presetId;
+  jstCfgSave(c);
+  jstPaintShops();
+  jstPaintDates();
+  jstPaintPresets();
+}
+
+function jstSavePreset(asNew){
+  const c = jstCfg();
+  const shops = Array.from(JSTUI.picked);
+  if (!shops.length){ toast("先选至少一个店铺"); return; }
+  if (asNew){
+    const name = ($("jstName") && $("jstName").value || "").trim();
+    if (!name){ toast("给预设起个名字"); return; }
+    const item = { id: "p" + Date.now().toString(36), name: name.slice(0, 24), shops: shops, dateMode: JSTUI.dateMode, from: JSTUI.from, to: JSTUI.to, at: Date.now() };
+    c.presets.push(item);
+    JSTUI.presetId = item.id;
+    $("jstNameRow").classList.add("hidden");
+  } else {
+    const item = c.presets.filter(p => p.id === JSTUI.presetId)[0];
+    if (!item){ jstSavePreset(true); return; }
+    item.shops = shops;
+    item.dateMode = JSTUI.dateMode;
+    item.from = JSTUI.from;
+    item.to = JSTUI.to;
+    item.at = Date.now();
+  }
+  c.last = JSTUI.presetId;
+  jstCfgSave(c);
+  jstPaintPresets();
+  toast("预设已保存");
+}
+
+function jstDelPreset(){
+  const c = jstCfg();
+  const item = c.presets.filter(p => p.id === JSTUI.presetId)[0];
+  if (!item){ toast("还没选中预设"); return; }
+  c.presets = c.presets.filter(p => p.id !== item.id);
+  if (c.last === item.id) c.last = "";
+  JSTUI.presetId = "";
+  jstCfgSave(c);
+  jstPaintPresets();
+  toast("已删除预设「" + item.name + "」");
+}
+
+/* ---------- 取数与执行 ---------- */
+async function jstLoadShops(force){
+  if (!jstExt()) return;
+  const c = jstCfg();
+  if (!force && c.shopCache && Array.isArray(c.shopCache.list) && c.shopCache.list.length){
+    JSTUI.shops = c.shopCache.list;
+    if (!JSTUI.picked.size) JSTUI.shops.forEach(s => JSTUI.picked.add(Number(s.id)));
+    jstPaintShops();
+    return;
+  }
+  const box = $("jstShops");
+  if (box) box.innerHTML = '<div class="jsthint">正在从聚水潭获取店铺清单…（没开报表页会自动在后台开一个）</div>';
+  try {
+    const r = await chrome.runtime.sendMessage({ type: "jst:shops" });
+    if (!r || !r.ok) throw new Error((r && r.msg) || "获取失败");
+    JSTUI.shops = r.shops || [];
+    const c2 = jstCfg();
+    c2.shopCache = { at: Date.now(), list: JSTUI.shops };
+    jstCfgSave(c2);
+    if (!JSTUI.picked.size) JSTUI.shops.forEach(s => JSTUI.picked.add(Number(s.id)));
+    jstPaintShops();
+  } catch (e){
+    if (box) box.innerHTML = '<div class="jsthint">获取店铺失败：' + esc((e && e.message) || e) + '</div>';
+  }
+}
+
+async function jstGo(){
+  if (JSTUI.busy) return;
+  const shops = Array.from(JSTUI.picked).filter(Boolean);
+  if (!shops.length){ jstStatus("先选至少一个店铺", "err"); return; }
+  const r0 = jstRange(JSTUI.dateMode, JSTUI.from, JSTUI.to);
+  jstBusy(true);
+  jstStatus("正在连接聚水潭…");
+  try {
+    const cond = jstCond({ shops: shops, dateMode: JSTUI.dateMode, from: r0.a, to: r0.b });
+    const r = await chrome.runtime.sendMessage({ type: "jst:run", condition: cond });
+    if (!r || !r.ok) throw new Error((r && r.msg) || "执行失败");
+    jstStatus("已生成 " + r.count + " 行，正在取回文件…");
+    const box = (await chrome.storage.local.get(JST_FILE_KEY))[JST_FILE_KEY];
+    if (!box) throw new Error("数据没有落到本地，请重试");
+    await chrome.storage.local.remove(JST_FILE_KEY).catch(() => {});
+    if (box.kind === "rows" && Array.isArray(box.rows)){
+      /* 直接取数通道：已经是二维表，跳过文件解析 */
+      jstStatus("正在导入 " + (box.rows.length - 1) + " 行…");
+      impOpenTable(box.name || "聚水潭报表.csv", box.rows, "", true);
+    } else {
+      if (!box.b64) throw new Error("文件没有落到本地，请重试");
+      const bin = atob(box.b64);
+      const u8 = new Uint8Array(bin.length);
+      for (let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i);
+      jstStatus("正在解析并导入 " + Math.round(u8.length / 1024) + "KB…");
+      await impHandleBuffer(box.name || r.name || "聚水潭导出.xlsx", u8.buffer, { auto: true });
+    }
+    jstStatus("完成：" + r.count + " 行已导入", "ok");
+    setTimeout(() => { const m = $("jstModal"); if (m) m.classList.remove("show"); }, 700);
+  } catch (e){
+    console.error(e);
+    const msg = String((e && e.message) || e);
+    /* 文件取不回来但已经交给浏览器下载了：这不是失败，只是慢一步 */
+    if (/已改用浏览器下载/.test(msg)) jstStatus(msg);
+    else jstStatus("失败：" + msg, "err");
+  } finally {
+    jstBusy(false);
+  }
+}
+
+function jstOpen(){
+  jstEnsureModal();
+  const c = jstCfg();
+  if (c.last && !JSTUI.presetId) JSTUI.presetId = c.last;
+  jstPaintPresets();
+  if (JSTUI.presetId) jstApplyPreset(JSTUI.presetId);
+  jstPaintDates();
+  jstPaintShops();
+  jstStatus("只用你已登录的聚水潭账号取数，不上传任何信息");
+  $("jstModal").classList.add("show");
+  jstLoadShops(false);
+}
+
+/* 只在扩展环境露出入口；单文件版本没有后台，按钮直接不显示 */
+(function jstBoot(){
+  const btn = $("btnJst");
+  if (!btn) return;
+  if (!jstExt()){ btn.style.display = "none"; return; }
+  btn.style.display = "";
+  btn.onclick = jstOpen;
+  try {
+    chrome.runtime.onMessage.addListener(function (m){
+      if (m && m.type === "jst:progress" && $("jstModal") && $("jstModal").classList.contains("show")) jstStatus(m.text);
+    });
+  } catch (e){}
+})();
 
 /* ================= 工具 ================= */
 function esc(s){ return String(s==null?"":s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m])); }
@@ -2039,7 +3236,7 @@ function renderV(){
     return;
   }
   if(!rows.length){
-    $("dBody").innerHTML=`<div class="rphint" style="margin:18px">当前条件下没有利润数据。${recs.length?"该链接有 "+recs.length+" 条调整记录，可切到「记录」查看。":"可能是还没导入 CSV，或这条链接不在报表里。"}</div>`;
+    $("dBody").innerHTML=`<div class="rphint" style="margin:18px">当前条件下没有利润数据。${recs.length?"该链接有 "+recs.length+" 条调整记录，可切到「记录」查看。":"可能是还没导入利润表，或这条链接不在报表里。"}</div>`;
     return;
   }
   if(V.group==="row") vTableRows(rows); else vTableAgg(rows);
@@ -2636,19 +3833,10 @@ document.addEventListener("dragover",e=>{
   if(th&&(th.dataset.col||th.dataset.dcol)!==dragCol) e.preventDefault();
 });
 document.addEventListener("drop",e=>{
-  if(!dragCol) return;
-  const th=e.target.closest("th[data-col],th[data-dcol]"); if(!th) return;
-  e.preventDefault();
-  e.stopImmediatePropagation(); // 阻断同节点上的文件导入 drop 监听器
-  const target=th.dataset.col||th.dataset.dcol;
-  if(target&&target!==dragCol){
-    const from=visibleCols.indexOf(dragCol);
-    visibleCols.splice(from,1);
-    const to=visibleCols.indexOf(target);
-    visibleCols.splice(from<to?to+1:to,0,dragCol);
-    if(th.closest("#dBody")) renderV(); else renderTable();
-  }
-  dragCol=null;
+  e.preventDefault(); dragDepth=0; $("dropMask").style.display="none";
+  const f=e.dataTransfer.files[0]; if(!f) return;
+  if(!/\.(csv|xlsx|xlsm|txt)$/i.test(f.name)&&!/csv|sheet|excel/i.test(f.type||"")){ toast("请拖入 Excel 或 CSV 文件"); return; }
+  impHandleFile(f);
 });
 document.addEventListener("dragend",()=>{
   dragCol=null;
@@ -2725,9 +3913,7 @@ try{ const savedTheme=localStorage.getItem("gpv-theme"); if(savedTheme==="light"
 document.querySelectorAll("#viewTabs .vtab").forEach(t=>t.onclick=()=>switchView(t.dataset.view));
 $("fileInput").onchange=e=>{
   const f=e.target.files[0]; if(!f) return;
-  const reader=new FileReader();
-  reader.onload=()=>loadCSVText(reader.result,f.name);
-  reader.readAsText(f,"utf-8");
+  impHandleFile(f);
   e.target.value="";
 };
 // 拖放
@@ -2739,14 +3925,6 @@ document.addEventListener("dragleave",e=>{
   if(dragCol) return;
   e.preventDefault();if(--dragDepth<=0){dragDepth=0;$("dropMask").style.display="none";}});
 document.addEventListener("dragover",e=>e.preventDefault());
-document.addEventListener("drop",e=>{
-  e.preventDefault(); dragDepth=0; $("dropMask").style.display="none";
-  const f=e.dataTransfer.files[0]; if(!f) return;
-  if(!/\.csv$/i.test(f.name)&&f.type!=="text/csv"){ toast("请拖入 CSV 文件"); return; }
-  const reader=new FileReader();
-  reader.onload=()=>loadCSVText(reader.result,f.name);
-  reader.readAsText(f,"utf-8");
-});
 
 // ESC 关闭
 document.addEventListener("keydown",e=>{
@@ -2761,7 +3939,7 @@ document.addEventListener("keydown",e=>{
 /* ================= 调整记录模块（与利润数据按链接ID打通） ================= */
 (function(){
 "use strict";
-const REC_KEY="adlog_records_v2", SHOP_KEY="adlog_shops_v1", IMG_KEY="adlog_linkimgs_v1", PREF_KEY="plb_prefs_v1";
+const REC_KEY="adlog_records_v2", SHOP_KEY="adlog_shops_v1", IMG_KEY="adlog_linkimgs_v1", PREF_KEY="plb_prefs_v1", PLAN_KEY="adlog_plans_v1";
 const PLANS={"PDD":["稳定成本推广","全店推广","其他"],"抖音":["乘方","全域自选","全域全店托管","其他"],"淘宝":["全站推广","关键词推广","其他"]};
 const WINS=[[3,"3天"],[7,"7天"],[14,"14天"],[30,"30天"],[0,"全部"]];
 
@@ -2781,6 +3959,12 @@ let recList=[];
 try{ recList=JSON.parse(localStorage.getItem(REC_KEY)||"[]")||[]; }catch(e){ recList=[]; }
 if(!Array.isArray(recList)) recList=[];
 recList.forEach(r=>{ if(r.gstat==="未完成") r.gstat="进行中"; });
+/* 调整计划：先记下打算怎么调，确认「已调整」后才转成调整记录；计划本身不带时间 */
+let planList=[];
+try{ planList=JSON.parse(localStorage.getItem(PLAN_KEY)||"[]")||[]; }catch(e){ planList=[]; }
+if(!Array.isArray(planList)) planList=[];
+const savePlans=()=>{ try{ localStorage.setItem(PLAN_KEY, JSON.stringify(planList)); }catch(e){ toast("本地存储已满，建议删掉部分计划"); } };
+let lgSelected=new Set();
 let shops={"PDD":[],"抖音":[],"淘宝":[]};
 try{ Object.assign(shops, JSON.parse(localStorage.getItem(SHOP_KEY)||"{}")); }catch(e){}
 const saveRecs=()=>{ try{ localStorage.setItem(REC_KEY, JSON.stringify(recList)); }catch(e){ toast("本地存储已满，建议删除部分记录"); } };
@@ -3098,7 +4282,7 @@ function chartSvg(series,opt){
   opt=opt||{};
   const mets=(opt.metrics||chartMets()).map(k=>CHART_MET_MAP[k]).filter(Boolean);
   const marks=(opt.marks||[]).filter(Boolean);
-  if(!series||series.length<2) return `<div class="chart-empty">折线图至少需要 2 天数据${series&&series.length===1?"（当前只有 1 天）":"（先导入利润 CSV）"}</div>`;
+  if(!series||series.length<2) return `<div class="chart-empty">折线图至少需要 2 天数据${series&&series.length===1?"（当前只有 1 天）":"（先导入利润表）"}</div>`;
   if(!mets.length) return `<div class="chart-empty">请至少选择一项指标</div>`;
   const H0=opt.h||260, W=opt.w||880, L=58, R=mets.some(m=>m.axis===2)?58:18, T=16, B=30;
   const lm=mets.filter(m=>m.axis!==2), rm=mets.filter(m=>m.axis===2);
@@ -3172,7 +4356,7 @@ function mc(label,a,b,f,pp){
   return `<div class="mc"><div class="mcl">${label}</div><div class="mcv">${f(a)} → <b>${f(b)}</b></div><div class="mcd ${cls}">${dt}</div></div>`;
 }
 function metricsHtml(m){
-  if(!m) return `<div class="rphint" style="padding:10px">${ROWS.length?"该链接在利润表中暂无数据":"未导入利润 CSV，导入后自动出现前后对比"}</div>`;
+  if(!m) return `<div class="rphint" style="padding:10px">${ROWS.length?"该链接在利润表中暂无数据":"未导入利润表，导入后自动出现前后对比"}</div>`;
   if(!m.ok) return `<div class="rphint" style="padding:10px">调整前或调整后暂无成交数据（可能早于/晚于导入的 CSV 时间范围），无法对比</div>`;
   return `<div class="rc-metrics">
     ${mc("日均成交",m.prev.avgAmt,m.next.avgAmt,fm)}
@@ -3199,6 +4383,7 @@ function cardHtml(r){
       <span class="pbadge">${H(r.platform||"—")}</span>
       <span class="vbadge ${v.cls}">${H(v.t)}</span>
       <span class="sbadge" data-act="toggle" title="点击切换进行中/已完成">${H(r.gstat||"进行中")}</span>
+      ${r.planId?`<span class="planbadge" title="由调整计划确认后生成，时间是确认那一刻">计划转入</span>`:""}
       <span class="rc-time" style="margin-left:auto">${H(shopLabel(r))}</span>
     </div>
     <div class="rc-title">${H(head)} ${link}</div>
@@ -3250,6 +4435,7 @@ function ledgerGroups(){
 function pwCardHtml(g){
   const rs=g.recs, last=rs[0];
   const id=String(g.linkId||"");
+  const selected=id&&lgSelected.has(norm(id));
   const img=id?imgOf(id):"";
   const name=last.title||last.product||"（未填标题）";
   const gap=dayDiff(String(last.time||"").slice(0,10),today());
@@ -3272,8 +4458,8 @@ function pwCardHtml(g){
     return `<div class="pw-kv"><span class="k">${label}</span><span class="v">${f(a)}<span class="arw">→</span>${f(b)}</span><span class="d ${cls}">${(d>=0?"+":"")+d.toFixed(dec)+unit}</span></div>`;
   };
   const kvs=(m&&m.ok)?kv("净利润",m.prev.avgProf,m.next.avgProf,fm)+kv("利润率",m.prev.pr,m.next.pr,fPr,true):"";
-  return `<div class="pw-card" data-open-link="${H(id)}" data-lk="${H(id)}" title="点击查看趋势图与全部调整记录">
-    <div class="pw-media">${media}${rs.length>1?`<span class="pw-cnt" title="该链接共有 ${rs.length} 次调整">${rs.length} 次</span>`:""}<span class="pw-hint">点击看趋势与全部记录</span></div>
+  return `<div class="pw-card${selected?" is-selected":""}" data-open-link="${H(id)}" data-lk="${H(id)}" title="点击查看趋势图与全部调整记录">
+    <div class="pw-media">${media}${id?`<label class="pw-select" title="选择该商品及其全部历史调整记录"><input type="checkbox" data-lg-select="${H(norm(id))}" aria-label="选择商品 ${H(name)}"${selected?" checked":""}><span>选择</span></label>`:""}${rs.length>1?`<span class="pw-cnt" title="该链接共有 ${rs.length} 次调整">${rs.length} 次</span>`:""}<span class="pw-hint">点击看趋势与全部记录</span></div>
     <div class="pw-body">
       <div class="pw-name">${H(name)}</div>
       <div class="pw-id">ID ${H(id||"—")}${id?`<span class="cpy" data-cpy="${H(id)}" title="复制链接ID">⧉</span>`:""}</div>
@@ -3286,6 +4472,7 @@ function pwCardHtml(g){
 }
 /* 点卡片打开该链接的趋势面板（图片区走灯箱放大） */
 document.addEventListener("click",e=>{
+  if(e.target.closest(".pw-select")) return;
   if(e.target.closest(".cpy")) return;
   if(e.target.closest(".pw-media img")) return;   /* 图片交给灯箱放大 */
   const op=e.target.closest("[data-open-link]");
@@ -3340,16 +4527,33 @@ function renderLedger(){
     f("持平",flat)+f("观察中",watch)+
     (no?f("无数据",no):"")+
     `<div class="stat"><div class="label">对比窗口</div><div class="val" style="font-size:13px">${winDays>0?`前后各 ${winDays} 天`:"全部历史"}</div></div>`;
-  const note=ROWS.length?"":`<div class="rphint" style="margin:0 0 12px">当前未导入利润 CSV：记录可正常查看与编辑，导入后自动补齐「有效 / 无效」判定与前后对比。</div>`;
+  const note=ROWS.length?"":`<div class="rphint" style="margin:0 0 12px">当前未导入利润表：记录可正常查看与编辑，导入后自动补齐「有效 / 无效」判定与前后对比。</div>`;
   el("lgList").innerHTML=note+(groups.gs.length
     ? `<div class="pw">${groups.gs.map(pwCardHtml).join("")}</div>`
     : `<div class="rphint">${recList.length?"当前筛选条件下没有记录":"还没有任何调整记录 —— 点右上角「✏️ 记一笔」开始，或在利润明细表的「调整记录」列点「＋ 记一笔」。"}</div>`);
   el("ledgerCnt").textContent=recList.length;
   paintLgShopBtn();
+  paintLgBulkBar(groups.gs);
+}
+function paintLgBulkBar(visibleGroups){
+  const existing=new Set(recList.map(r=>norm(r&&r.linkId)).filter(Boolean));
+  for(const key of lgSelected){ if(!existing.has(key)) lgSelected.delete(key); }
+  const visible=new Set((visibleGroups||[]).map(g=>norm(g.linkId)).filter(Boolean));
+  const recordCount=recList.filter(r=>lgSelected.has(norm(r&&r.linkId))).length;
+  const allVisible=visible.size>0&&[...visible].every(key=>lgSelected.has(key));
+  el("lgBulkCount").textContent=lgSelected.size
+    ?`已选 ${lgSelected.size} 个商品，共 ${recordCount} 条历史记录`
+    :"未选择商品";
+  el("lgSelectVisible").disabled=!visible.size;
+  el("lgSelectVisible").textContent=allVisible?"取消全选当前结果":"全选当前结果";
+  el("lgClearSelected").disabled=!lgSelected.size;
+  el("lgDeleteSelected").disabled=!lgSelected.size;
 }
 
 /* ---------- 新增 / 编辑表单 ---------- */
 let editingId=null;
+let formMode="rec";        // rec=记一笔；plan=调整计划（复用同一张表单，只是不填时间）
+let planEditingId=null;
 let rmTipTimer=null;
 function hint(msg,warn){
   const n=el("rmHint"); n.textContent=msg||""; n.className="mhint"+(warn?" warn":"");
@@ -3434,14 +4638,23 @@ function rmFocusIdentity(id){
   el("rmIdentity").open=true;
   const target=el(id); target.focus(); target.scrollIntoView({block:"nearest"});
 }
-function openForm(pre){
+function openForm(pre,mode){
   pre=pre||{};
+  formMode=mode==="plan"?"plan":"rec";
   rmReturnFocus=document.activeElement;
-  editingId=pre.id||null;
+  editingId=formMode==="rec"?(pre.id||null):null;
+  planEditingId=formMode==="plan"?(pre.id||null):null;
   rmQuickUI={};
   clearTimeout(rmIdentityTimer);
   delete el("rmPlatform").dataset.touched;
-  el("rmHead").textContent=editingId?"编辑调整记录":"新增调整记录";
+  el("rmHead").textContent=formMode==="plan"
+    ?(planEditingId?"编辑调整计划":"新增调整计划")
+    :(editingId?"编辑调整记录":"新增调整记录");
+  el("rmSave").textContent=formMode==="plan"?"保存计划":"保存记录";
+  /* 「加入清单」只在记一笔的新建场景出现：编辑已有记录时它是既成事实，不能退回待办 */
+  el("rmToList").style.display=(formMode==="rec"&&!editingId)?"":"none";
+  el("rmTimeFld").style.display=formMode==="plan"?"none":"";
+  el("rmPlanFld").classList.toggle("full",formMode==="plan");
   const linkId=String(pre.linkId||"").trim();
   rmMatchedLinkId=linkId;
   const auto=(linkId&&(!pre.shop||!pre.platform||!pre.title))?autoFillFromLink(linkId):{};
@@ -3474,7 +4687,11 @@ function openForm(pre){
   requestAnimationFrame(()=>{ if(el("recModal").classList.contains("show")) el(linkId?"rmItem":"rmLinkId").focus({preventScroll:true}); });
 }
 function closeForm(){
-  el("recModal").classList.remove("show"); editingId=null;
+  el("recModal").classList.remove("show"); editingId=null; planEditingId=null; formMode="rec";
+  el("rmTimeFld").style.display="";
+  el("rmSave").textContent="保存记录";
+  el("rmToList").style.display="";
+  el("rmPlanFld").classList.remove("full");
   clearTimeout(rmTipTimer);
   clearTimeout(rmIdentityTimer);
   if(rmReturnFocus&&rmReturnFocus.isConnected) rmReturnFocus.focus({preventScroll:true});
@@ -3568,11 +4785,11 @@ el("recModal").addEventListener("keydown",e=>{
   }
 });
 
-el("rmSave").addEventListener("click",()=>{
-  const wasEdit=!!editingId;
+/* 表单取数：记一笔和调整计划共用同一套字段 */
+function readFormData(){
   const shopRaw=el("rmShop").value.trim();
   const spSave=splitShop(shopRaw);
-  const data={
+  return {
     time:el("rmTime").value, platform:spSave.platform||el("rmPlatform").value,
     linkId:el("rmLinkId").value.trim(),
     title:el("rmTitleIn").value.trim(), shop:spSave.shop||shopRaw,
@@ -3582,26 +4799,287 @@ el("rmSave").addEventListener("click",()=>{
     goal:el("rmGoal")?el("rmGoal").value.trim():"",
     concl:el("rmConcl").value, gstat:el("rmStat").value
   };
+}
+function saveShopFromRec(data){
+  if(!data.shop) return;
+  const arr=shops[data.platform]||(shops[data.platform]=[]);
+  if(arr.indexOf(data.shop)<0) arr.push(data.shop);
+  saveShops();
+}
+/* 计划与记录共用同一套字段，差别只有「时间」：写计划时把 time 摘掉，其余原样保留 */
+function planPayload(data){
+  const plan=Object.assign({},data);
+  delete plan.time;
+  return plan;
+}
+/* 唯一的入清单出口：新建计划、记一笔里「加入清单」都走这里，保证两条路存的东西完全一致 */
+function planAdd(data,extra){
+  const item=Object.assign({
+    id:"pl"+Date.now()+"_"+Math.random().toString(36).slice(2,7),
+    createdAt:new Date().toISOString(),
+    updatedAt:new Date().toISOString()
+  },planPayload(data),extra||{});
+  planList.push(item);
+  saveShopFromRec(data);
+  savePlans(); paintPlanCnt();
+  return item;
+}
+
+el("rmSave").addEventListener("click",()=>{
+  const data=readFormData();
+  /* ---- 调整计划：只存待办，不占调整记录、不落时间 ---- */
+  if(formMode==="plan"){
+    if(!data.platform){ rmFocusIdentity("rmPlatform"); return hint("请选择平台",true); }
+    if(!data.linkId){ rmFocusIdentity("rmLinkId"); return hint("请填写链接 ID——它是记录的唯一主体",true); }
+    const wasEdit=!!planEditingId;
+    if(wasEdit){
+      const plan=planPayload(data);
+      const i=planList.findIndex(p=>String(p.id)===String(planEditingId));
+      if(i>-1) planList[i]=Object.assign({},planList[i],plan,{updatedAt:new Date().toISOString()});
+      saveShopFromRec(data); savePlans(); paintPlanCnt();
+    }else{
+      planAdd(data);
+    }
+    closeForm(); renderPlanList();
+    toast(wasEdit?"计划已更新":"计划已保存");
+    return;
+  }
+  const wasEdit=!!editingId;
   if(!data.time) return hint("请填写调整时间",true);
   if(!data.platform){ rmFocusIdentity("rmPlatform"); return hint("请选择平台",true); }
   if(!data.linkId){ rmFocusIdentity("rmLinkId"); return hint("请填写链接 ID——它是记录的唯一主体",true); }
   if(editingId){
     const i=recList.findIndex(r=>String(r.id)===String(editingId));
-    if(i>-1) recList[i]=Object.assign({},recList[i],data);
+    if(i>-1) recList[i]=Object.assign({},recList[i],data,{updatedAt:new Date().toISOString()});
   }else{
-    recList.push(Object.assign({id:Date.now()+"_"+Math.random().toString(36).slice(2,7),createdAt:new Date().toISOString()},data));
+    recList.push(Object.assign({id:Date.now()+"_"+Math.random().toString(36).slice(2,7),createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()},data));
   }
-  if(data.shop){
-    const arr=shops[data.platform]||(shops[data.platform]=[]);
-    if(arr.indexOf(data.shop)<0) arr.push(data.shop);
-    saveShops();
-  }
+  saveShopFromRec(data);
   saveRecs(); _ridx=null; closeForm(); toast(wasEdit?"已更新":"已保存");
   refreshAll();
+});
+el("rmToList").addEventListener("click",()=>{
+  if(formMode!=="rec"||editingId) return;
+  const data=readFormData();
+  if(!data.platform){ rmFocusIdentity("rmPlatform"); return hint("请选择平台",true); }
+  if(!data.linkId){ rmFocusIdentity("rmLinkId"); return hint("请填写链接 ID——它是记录的唯一主体",true); }
+  /* 同商品同调整项可能是有意的第二次调整，所以只提示不拦截 */
+  const key=norm(data.linkId);
+  const same=planList.filter(p=>norm(p.linkId)===key&&String(p.item||"")===String(data.item||"")).length;
+  planAdd(data,{src:"rec"});
+  closeForm(); renderPlanList();
+  toast(same
+    ?`已加入清单：该商品现在有 ${same+1} 个「${data.item||"未填调整项"}」计划，执行前先核对别重复`
+    :"已加入清单（不记时间）：改完在「🗓 调整计划」里点「✅ 已调整」入账");
 });
 el("rmCancel").addEventListener("click",closeForm);
 el("rmClose").addEventListener("click",closeForm);
 el("recModal").addEventListener("click",e=>{ if(e.target.id==="recModal") closeForm(); });
+
+/* ---------- 调整计划：列表、编辑、删除、确认入账 ---------- */
+function paintPlanCnt(){
+  const n=planList.length, badge=el("planCnt");
+  if(badge){ badge.textContent=n; badge.style.display=n?"":"none"; }
+  const h=el("planHint");
+  if(h) h.textContent=n
+    ?`共 ${n} 个待执行计划 · 点「已调整」会按确认时间记入调整记录`
+    :"计划只是待办，不占调整记录；点「已调整」才按确认时间入账";
+}
+function planBuiltAt(p){
+  const t=Date.parse(p.createdAt||"")||0;
+  if(!t) return "";
+  const d=new Date(t);
+  return `${d.getMonth()+1}/${d.getDate()} 建立`;
+}
+function renderPlanList(){
+  const box=el("planList");
+  if(!box) return;
+  paintPlanCnt();
+  if(!planList.length){
+    box.innerHTML='<div class="plempty"><b>还没有调整计划</b>把打算怎么调先写下来（平台、链接、改什么、改成多少）：可以在「记一笔」里填完点「＋ 加入清单」，也可以点下方「＋ 新建计划」。等真的改完再回来点「✅ 已调整」，会按那时的确认时间记成一条正常的调整记录。</div>';
+    return;
+  }
+  const list=planList.slice().sort((a,b)=>String(b.createdAt||"").localeCompare(String(a.createdAt||"")));
+  box.innerHTML=list.map(p=>{
+    const id=H(String(p.id||""));
+    const title=p.title||("链接 "+String(p.linkId||""));
+    const meta=[p.platform,p.shop].filter(Boolean).map(H).join(" · ");
+    const chg=(p.item||p.before||p.after)
+      ?`<div class="plchg">${p.plan?`<span class="pltype">${H(p.plan)}</span>`:""}<span>${H(p.item||"调整")}</span><b>${H(p.before||"—")}</b><span class="arw">→</span><b>${H(p.after||"—")}</b></div>`
+      :"";
+    const reason=p.reason?`<div class="plnote"><em>为什么改</em>${H(p.reason)}</div>`:"";
+    const next=p.next?`<div class="plnote"><em>后续计划</em>${H(p.next)}</div>`:"";
+    const built=planBuiltAt(p);
+    const fromRec=p.src==="rec"?`<span class="plfrom" title="在「记一笔」里点「加入清单」存进来的">来自记一笔</span>`:"";
+    const pid=String(p.linkId||"");
+    const idCopy=pid?`<span class="cpy" data-cpy="${H(pid)}" title="点击复制链接ID">⧉</span>`:"";
+    return `<div class="plcard" data-plan-id="${id}">
+      <div class="plmain">
+        <div class="pltitle" title="${H(title)}">${H(title)}</div>
+        <div class="plmeta"><span class="plid">ID ${H(pid||"—")}${idCopy}</span>${meta?`<span>${meta}</span>`:""}${fromRec}${built?`<span>${H(built)}</span>`:""}</div>
+        ${chg}${reason}${next}
+      </div>
+      <div class="placts">
+        <button type="button" class="btn primary" data-plan-act="confirm" data-plan-id="${id}">✅ 已调整</button>
+        <button type="button" class="btn" data-plan-act="edit" data-plan-id="${id}">编辑</button>
+        <button type="button" class="btn danger" data-plan-act="del" data-plan-id="${id}">删除</button>
+      </div>
+    </div>`;
+  }).join("");
+}
+function openPlans(){
+  renderPlanList();
+  el("planModal").classList.add("show");
+  el("planList").scrollTop=0;
+}
+function closePlans(){ el("planModal").classList.remove("show"); }
+function planConfirm(id){
+  const p=planList.filter(x=>String(x.id)===String(id))[0];
+  if(!p) return;
+  const data=Object.assign({},p);
+  delete data.id; delete data.createdAt; delete data.updatedAt; delete data.src;
+  const rec=Object.assign({},data,{
+    id:Date.now()+"_"+Math.random().toString(36).slice(2,7),
+    time:nowLocal(),
+    createdAt:new Date().toISOString(),
+    updatedAt:new Date().toISOString(),
+    planId:String(p.id)
+  });
+  recList.push(rec);
+  saveShopFromRec(rec);
+  planList=planList.filter(x=>String(x.id)!==String(p.id));
+  saveRecs(); savePlans(); _ridx=null;
+  renderPlanList(); refreshAll();
+  toast("已按确认时间 "+rec.time.replace("T"," ")+" 记入调整记录");
+}
+function planRemove(id){
+  const p=planList.filter(x=>String(x.id)===String(id))[0];
+  if(!p) return;
+  planList=planList.filter(x=>String(x.id)!==String(p.id));
+  savePlans(); renderPlanList();
+  toast("计划已删除");
+}
+
+/* ---------- 导出调整计划：手写 store-only ZIP 生成 xlsx（不引第三方库，单文件版同样可用） ---------- */
+const PL_COLS=[
+  {t:"平台",w:10},{t:"店铺",w:20},{t:"链接ID",w:16},{t:"产品标题",w:44},
+  {t:"计划类型",w:18},{t:"调整项",w:16},{t:"改动前",w:11},{t:"改动后",w:11},
+  {t:"修改原因",w:46},{t:"后续计划",w:38}
+];
+const PL_CRC=(()=>{
+  const t=new Uint32Array(256);
+  for(let n=0;n<256;n++){ let c=n; for(let k=0;k<8;k++) c=(c&1)?(0xEDB88320^(c>>>1)):(c>>>1); t[n]=c>>>0; }
+  return t;
+})();
+function plCrc32(u8){ let c=0xFFFFFFFF; for(let i=0;i<u8.length;i++) c=PL_CRC[(c^u8[i])&255]^(c>>>8); return (c^0xFFFFFFFF)>>>0; }
+function plXml(s){
+  return String(s==null?"":s)
+    .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g,"")
+    .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+function plColName(i){ let s=""; i++; while(i>0){ const m=(i-1)%26; s=String.fromCharCode(65+m)+s; i=Math.floor((i-1)/26); } return s; }
+/* ZIP：只用 store（不压缩），xlsx 本来就不要求 deflate，Excel 能正常打开 */
+function plZip(files){
+  const enc=new TextEncoder(), now=new Date();
+  const dosTime=((now.getHours()<<11)|(now.getMinutes()<<5)|(now.getSeconds()>>1))&0xFFFF;
+  const dosDate=((((now.getFullYear()-1980)&127)<<9)|((now.getMonth()+1)<<5)|now.getDate())&0xFFFF;
+  const chunks=[],central=[]; let offset=0;
+  for(const f of files){
+    const name=enc.encode(f.name), data=typeof f.data==="string"?enc.encode(f.data):f.data, crc=plCrc32(data);
+    const lh=new Uint8Array(30+name.length), ld=new DataView(lh.buffer);
+    ld.setUint32(0,0x04034b50,true); ld.setUint16(4,20,true); ld.setUint16(6,0x0800,true);
+    ld.setUint16(8,0,true); ld.setUint16(10,dosTime,true); ld.setUint16(12,dosDate,true);
+    ld.setUint32(14,crc,true); ld.setUint32(18,data.length,true); ld.setUint32(22,data.length,true);
+    ld.setUint16(26,name.length,true); ld.setUint16(28,0,true); lh.set(name,30);
+    chunks.push(lh,data);
+    const ch=new Uint8Array(46+name.length), cd=new DataView(ch.buffer);
+    cd.setUint32(0,0x02014b50,true); cd.setUint16(4,20,true); cd.setUint16(6,20,true);
+    cd.setUint16(8,0x0800,true); cd.setUint16(10,0,true); cd.setUint16(12,dosTime,true); cd.setUint16(14,dosDate,true);
+    cd.setUint32(16,crc,true); cd.setUint32(20,data.length,true); cd.setUint32(24,data.length,true);
+    cd.setUint16(28,name.length,true); cd.setUint32(42,offset,true);
+    ch.set(name,46); central.push(ch);
+    offset+=lh.length+data.length;
+  }
+  const cdSize=central.reduce((a,b)=>a+b.length,0);
+  const eocd=new Uint8Array(22), ev=new DataView(eocd.buffer);
+  ev.setUint32(0,0x06054b50,true);
+  ev.setUint16(8,central.length,true); ev.setUint16(10,central.length,true);
+  ev.setUint32(12,cdSize,true); ev.setUint32(16,offset,true);
+  const all=chunks.concat(central,[eocd]);
+  const out=new Uint8Array(all.reduce((a,b)=>a+b.length,0));
+  let p=0; for(const c of all){ out.set(c,p); p+=c.length; }
+  return out;
+}
+function plSheetXml(rows){
+  const last=plColName(PL_COLS.length-1)+rows.length;
+  const cols=PL_COLS.map((c,i)=>`<col min="${i+1}" max="${i+1}" width="${c.w}" customWidth="1"/>`).join("");
+  const body=rows.map((row,ri)=>`<row r="${ri+1}"${ri===0?' ht="26" customHeight="1"':""}>`+row.map((v,ci)=>{
+    const ref=plColName(ci)+(ri+1), style=ri===0?1:(ri%2===0?3:2), text=String(v==null?"":v).slice(0,32000);
+    if(ri>0&&(ci===6||ci===7)&&/^-?\d+(\.\d{1,6})?$/.test(text)) return `<c r="${ref}" s="${style}"><v>${text}</v></c>`;
+    if(!text) return `<c r="${ref}" s="${style}"/>`;
+    return `<c r="${ref}" s="${style}" t="inlineStr"><is><t xml:space="preserve">${plXml(text)}</t></is></c>`;
+  }).join("")+`</row>`).join("");
+  return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheetPr><pageSetUpPr fitToPage="1"/></sheetPr><dimension ref="A1:${last}"/><sheetViews><sheetView tabSelected="1" workbookViewId="0"><pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/><selection pane="bottomLeft" activeCell="A2" sqref="A2"/></sheetView></sheetViews><sheetFormatPr defaultRowHeight="20"/><cols>${cols}</cols><sheetData>${body}</sheetData><autoFilter ref="A1:${last}"/><pageMargins left="0.4" right="0.4" top="0.5" bottom="0.5" header="0.3" footer="0.3"/><pageSetup orientation="landscape" paperSize="9" fitToWidth="1" fitToHeight="0"/></worksheet>`;
+}
+const PL_XLSX_STYLES=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><fonts count="3"><font><sz val="11"/><color rgb="FF1F2733"/><name val="微软雅黑"/></font><font><b/><sz val="11"/><color rgb="FFFFFFFF"/><name val="微软雅黑"/></font><font><sz val="10.5"/><color rgb="FF1F2733"/><name val="微软雅黑"/></font></fonts><fills count="4"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FF2F81F7"/><bgColor indexed="64"/></patternFill></fill><fill><patternFill patternType="solid"><fgColor rgb="FFF3F7FD"/><bgColor indexed="64"/></patternFill></fill></fills><borders count="2"><border><left/><right/><top/><bottom/><diagonal/></border><border><left style="thin"><color rgb="FFDCE4EE"/></left><right style="thin"><color rgb="FFDCE4EE"/></right><top style="thin"><color rgb="FFDCE4EE"/></top><bottom style="thin"><color rgb="FFDCE4EE"/></bottom><diagonal/></border></borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="4"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/><xf numFmtId="0" fontId="1" fillId="2" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center" wrapText="1"/></xf><xf numFmtId="0" fontId="2" fillId="0" borderId="1" xfId="0" applyFont="1" applyBorder="1" applyAlignment="1"><alignment vertical="center" wrapText="1"/></xf><xf numFmtId="0" fontId="2" fillId="3" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment vertical="center" wrapText="1"/></xf></cellXfs><cellStyles count="1"><cellStyle name="常规" xfId="0" builtinId="0"/></cellStyles></styleSheet>`;
+function plXlsxBytes(rows){
+  const files=[
+    {name:"[Content_Types].xml",data:`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/></Types>`},
+    {name:"_rels/.rels",data:`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>`},
+    {name:"xl/workbook.xml",data:`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><bookViews><workbookView activeTab="0"/></bookViews><sheets><sheet name="调整计划" sheetId="1" r:id="rId1"/></sheets></workbook>`},
+    {name:"xl/_rels/workbook.xml.rels",data:`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>`},
+    {name:"xl/styles.xml",data:PL_XLSX_STYLES},
+    {name:"xl/worksheets/sheet1.xml",data:plSheetXml(rows)}
+  ];
+  return plZip(files);
+}
+function planExportXlsx(){
+  if(!planList.length) return toast("清单是空的，没有可导出的计划");
+  const list=planList.slice().sort((a,b)=>String(b.createdAt||"").localeCompare(String(a.createdAt||"")));
+  const rows=[PL_COLS.map(c=>c.t)].concat(list.map(p=>[
+    p.platform||"",p.shop||"",p.linkId||"",p.title||"",p.plan||"",p.item||"",p.before||"",p.after||"",p.reason||"",p.next||""
+  ]));
+  const blob=new Blob([plXlsxBytes(rows)],{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download="调整计划-"+today().replace(/-/g,"")+".xlsx";
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(a.href),2000);
+  toast(`已导出 ${list.length} 个计划（Excel）`);
+}
+el("planExport").addEventListener("click",planExportXlsx);
+el("btnPlans").addEventListener("click",openPlans);
+el("planNew").addEventListener("click",()=>openForm({},"plan"));
+el("planClose").addEventListener("click",closePlans);
+el("planDone").addEventListener("click",closePlans);
+el("planModal").addEventListener("click",e=>{ if(e.target.id==="planModal") closePlans(); });
+el("planList").addEventListener("click",e=>{
+  const btn=e.target.closest("[data-plan-act]");
+  if(!btn) return;
+  const id=btn.dataset.planId, act=btn.dataset.planAct;
+  if(act==="edit"){
+    const p=planList.filter(x=>String(x.id)===String(id))[0];
+    if(p) openForm(p,"plan");
+    return;
+  }
+  /* 确认/删除都改成两步：第一次点变成「再点一次」，3 秒内再点才执行，防误触 */
+  if(btn.dataset.arm!=="1"){
+    btn.dataset.arm="1";
+    btn.dataset.label=btn.textContent;
+    btn.textContent=act==="confirm"?"确认写入？":"确认删除？";
+    setTimeout(()=>{ if(btn.isConnected){ btn.dataset.arm=""; btn.textContent=btn.dataset.label; } },3000);
+    return;
+  }
+  if(act==="confirm") planConfirm(id);
+  else if(act==="del") planRemove(id);
+});
+paintPlanCnt();
 
 /* ---------- 顶栏 / 面板 / 台账事件 ---------- */
 el("btnNewRec").addEventListener("click",()=>openForm({}));
@@ -3625,6 +5103,43 @@ function paintLgShopBtn(){
   if(!lgShops.size){ b.textContent="🏪 全部店铺"; b.classList.remove("primary"); }
   else { b.textContent=`🏪 ${lgShops.size} 个店铺`; b.classList.add("primary"); }
 }
+el("lgList").addEventListener("change",e=>{
+  const input=e.target.closest("input[data-lg-select]"); if(!input) return;
+  const key=norm(input.dataset.lgSelect); if(!key) return;
+  if(input.checked) lgSelected.add(key); else lgSelected.delete(key);
+  renderLedger();
+});
+el("lgSelectVisible").addEventListener("click",()=>{
+  const visible=new Set(ledgerGroups().gs.map(g=>norm(g.linkId)).filter(Boolean));
+  if(!visible.size) return;
+  const clear=[...visible].every(key=>lgSelected.has(key));
+  visible.forEach(key=>clear?lgSelected.delete(key):lgSelected.add(key));
+  renderLedger();
+});
+el("lgClearSelected").addEventListener("click",()=>{
+  lgSelected.clear();
+  renderLedger();
+});
+el("lgDeleteSelected").addEventListener("click",()=>{
+  const selected=[...lgSelected].filter(key=>recList.some(r=>norm(r&&r.linkId)===key));
+  const targets=recList.filter(r=>lgSelected.has(norm(r&&r.linkId)));
+  if(!selected.length||!targets.length) return toast("没有可删除的商品记录");
+  const details=selected.map(key=>{
+    const records=targets.filter(r=>norm(r&&r.linkId)===key);
+    const latest=records.slice().sort((a,b)=>String(b.time||"").localeCompare(String(a.time||"")))[0];
+    return `${latest.title||latest.product||"未命名商品"}（ID ${latest.linkId}，${records.length} 条）`;
+  });
+  const shown=details.slice(0,8).join("\n");
+  const more=details.length>8?`\n另有 ${details.length-8} 个商品`:"";
+  const message=`确定删除所选 ${selected.length} 个商品的全部 ${targets.length} 条调整记录？\n\n${shown}${more}\n\n删除范围包含当前时段、状态和结论筛选之外的历史记录，此操作无法撤销。`;
+  if(!confirm(message)) return;
+  recList=recList.filter(r=>!lgSelected.has(norm(r&&r.linkId)));
+  lgSelected.clear();
+  _ridx=null;
+  saveRecs();
+  toast(`已删除 ${selected.length} 个商品的 ${targets.length} 条调整记录`);
+  refreshAll();
+});
 el("lgVerdict").addEventListener("change",e=>{ lgVerdict=e.target.value; renderLedger(); });
 el("lgStatus").addEventListener("change",e=>{ lgStatus=e.target.value; renderLedger(); });
 let lgTimer=null;
@@ -3632,18 +5147,19 @@ el("lgSearch").addEventListener("input",e=>{ clearTimeout(lgTimer); lgTimer=setT
 document.addEventListener("keydown",e=>{
   if(e.key!=="Escape") return;
   if(el("recModal").classList.contains("show")){ closeForm(); return; }
+  if(el("planModal").classList.contains("show")){ closePlans(); return; }
 });
 
 /* ---------- 备份 ---------- */
 el("lgExport").addEventListener("click",()=>{
-  const data={app:"投放利润看板",version:3,exportedAt:new Date().toISOString(),shops:shops,records:recList,linkImgs:linkImgs,recordQuickOptions:rmQuickOptions};
+  const data={app:"投放利润看板",version:3,exportedAt:new Date().toISOString(),shops:shops,records:recList,plans:planList,linkImgs:linkImgs,recordQuickOptions:rmQuickOptions};
   const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
   const a=document.createElement("a");
   a.href=URL.createObjectURL(blob);
   a.download="投放调整记录-"+today().replace(/-/g,"")+".json";
   document.body.appendChild(a); a.click(); a.remove();
   setTimeout(()=>URL.revokeObjectURL(a.href),1000);
-  toast(`已导出 ${recList.length} 条记录`);
+  toast(`已导出 ${recList.length} 条记录`+(planList.length?`、${planList.length} 个调整计划`:""));
 });
 el("lgImport").addEventListener("click",()=>el("lgFile").click());
 el("lgFile").addEventListener("change",e=>{
@@ -3682,8 +5198,21 @@ el("lgFile").addEventListener("change",e=>{
       if(has.has(id)) continue;
       has.add(id); recList.push(Object.assign({},r,{id})); add++;
     }
-    saveRecs(); _ridx=null; refreshAll();
-    toast((add?`已导入 ${add} 条记录`+(Object.keys(linkImgs).length?`（含 ${Object.keys(linkImgs).length} 个商品图）`:""):"没有新增记录（全部已存在）")+(j&&j.recordQuickOptions?(quickSaved?" · 快捷项已合并":" · 快捷项保存失败，请重试"):""));
+    /* 调整计划：按 id 去重合并，不动已有的 */
+    let addPlan=0;
+    if(j&&Array.isArray(j.plans)){
+      const hp=new Set(planList.map(p=>String(p.id)));
+      for(const p of j.plans){
+        if(!p||!p.id||!p.linkId) continue;
+        const id=String(p.id);
+        if(hp.has(id)) continue;
+        hp.add(id); planList.push(Object.assign({},p,{id})); addPlan++;
+      }
+    }
+    saveRecs(); _ridx=null;
+    if(addPlan){ savePlans(); renderPlanList(); }
+    refreshAll();
+    toast((add?`已导入 ${add} 条记录`+(Object.keys(linkImgs).length?`（含 ${Object.keys(linkImgs).length} 个商品图）`:""):"没有新增记录（全部已存在）")+(addPlan?` · 计划 +${addPlan}`:"")+(j&&j.recordQuickOptions?(quickSaved?" · 快捷项已合并":" · 快捷项保存失败，请重试"):""));
   };
   rd.readAsText(f,"utf-8");
 });
@@ -3764,15 +5293,32 @@ el("ledgerCnt").textContent=recList.length;
 
 updateSortInfo();
 (function init(){
-  if(EMBEDDED_CSV_B64 && !EMBEDDED_CSV_B64.startsWith("__")){
-    try{
-      const bin=atob(EMBEDDED_CSV_B64);
-      const bytes=new Uint8Array(bin.length);
-      for(let i=0;i<bin.length;i++) bytes[i]=bin.charCodeAt(i);
-      const text=new TextDecoder("utf-8").decode(bytes);
-      loadCSVText(text,"内嵌数据");
-    }catch(err){ console.error(err); toast("内嵌数据解析失败，请手动导入 CSV"); }
-  }
+  tableCacheLoad().then(cached => {
+    if(cached){
+      _noPersist = true; _restoring = true;
+      try{ loadCSVText(cached.text, cached.name); }
+      catch(err){
+        console.error(err);
+        tableCacheClear();
+        toast("上次保存的表格读不出来了，请重新导入");
+      }
+      finally{ _noPersist = false; _restoring = false; }
+      paintSrcChip();
+      return;
+    }
+    /* 没有索引 = 没保存过：顺手清掉可能残留的 IDB 记录 */
+    idbDel(IDB_TABLE).catch(() => {});
+    paintSrcChip();
+    if(EMBEDDED_CSV_B64 && !EMBEDDED_CSV_B64.startsWith("__")){
+      try{
+        const bin=atob(EMBEDDED_CSV_B64);
+        const bytes=new Uint8Array(bin.length);
+        for(let i=0;i<bin.length;i++) bytes[i]=bin.charCodeAt(i);
+        const text=new TextDecoder("utf-8").decode(bytes);
+        loadCSVText(text,"内嵌数据");
+      }catch(err){ console.error(err); toast("内嵌数据解析失败，请手动导入表格"); }
+    }
+  }).catch(e => console.error("[table] 恢复失败", e));
 })();
 </script>
 </body>

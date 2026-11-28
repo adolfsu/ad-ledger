@@ -1,0 +1,17 @@
+# 打包产物（由 extension/ 压缩生成，可随时重建）
+*.zip
+
+# 历史备份
+_backup/
+
+# 构建/检查过程中的临时文件
+build/_*.js
+_*.html
+_*.png
+_dom*.txt
+
+# 编辑器与系统
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

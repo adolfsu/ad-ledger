@@ -1,0 +1,71 @@
+{
+  "manifest_version": 3,
+  "name": "投放利润看板",
+  "version": "3.4.1",
+  "description": "付费投放调整记录 + 利润联动看板，支持坚果云 WebDAV 云同步与聚水潭导出文件自动读取。",
+  "permissions": [
+    "storage",
+    "unlimitedStorage",
+    "downloads",
+    "scripting"
+  ],
+  "host_permissions": [
+    "https://dav.jianguoyun.com/*",
+    "https://*.erp321.com/*",
+    "https://*.jushuitan.com/*"
+  ],
+  "optional_host_permissions": [
+    "https://*/*",
+    "http://*/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://*.erp321.com/*"
+      ],
+      "js": [
+        "jst.js"
+      ],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "https://*.erp321.com/*",
+        "https://*.jushuitan.com/*"
+      ],
+      "js": [
+        "probe-main.js"
+      ],
+      "run_at": "document_start",
+      "all_frames": true,
+      "world": "MAIN"
+    },
+    {
+      "matches": [
+        "https://*.erp321.com/*",
+        "https://*.jushuitan.com/*"
+      ],
+      "js": [
+        "probe.js"
+      ],
+      "run_at": "document_start",
+      "all_frames": true
+    }
+  ],
+  "background": {
+    "service_worker": "bg.js"
+  },
+  "action": {
+    "default_title": "打开投放利润看板",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+}
