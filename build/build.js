@@ -20,7 +20,6 @@ const ROOT = path.resolve(__dirname, "..");
 const SRC = path.join(ROOT, "index.html");
 const OUT = path.join(ROOT, "extension");
 
-const ts = () => new Date().toISOString().slice(0, 16).replace("T", " ");
 
 function must(str, find, rep, expect) {
   const n = str.split(find).length - 1;
@@ -92,7 +91,7 @@ script = script.split("localStorage.setItem(").join("ST.set(");
 /* 4.3 包一层异步启动：先把 chrome.storage.local 的缓存灌进内存，再跑原有初始化 */
 const BANNER = `/* 由 build/build.js 从 index.html 自动生成，请勿直接修改本文件。
  *  改逻辑请改 index.html，然后执行：node build/build.js
- *  生成时间：${ts()}   版本：${VERSION}
+ *  版本：${VERSION}
  */
 "use strict";
 

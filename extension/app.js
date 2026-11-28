@@ -1,6 +1,6 @@
 /* 由 build/build.js 从 index.html 自动生成，请勿直接修改本文件。
  *  改逻辑请改 index.html，然后执行：node build/build.js
- *  生成时间：2026-11-28 03:30   版本：3.4.1
+ *  版本：3.4.1
  */
 "use strict";
 
